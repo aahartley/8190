@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "ImplicitVolumeShapes.C": "cpp",
+        "Main.C": "cpp",
+        "Color.C": "cpp",
+        "Camera.C": "cpp",
+        "Fields.C": "cpp",
+        "ImplicitColors.C": "cpp",
+        "ImplicitMatrixShapes.C": "cpp",
+        "ImplicitVectorShapes.C": "cpp",
+        "LinearAlgebra.C": "cpp",
+        "Volume.C": "cpp"
+    }
+}
