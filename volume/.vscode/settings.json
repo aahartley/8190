@@ -9,6 +9,8 @@
         "ImplicitMatrixShapes.C": "cpp",
         "ImplicitVectorShapes.C": "cpp",
         "LinearAlgebra.C": "cpp",
-        "Volume.C": "cpp"
-    }
+        "Volume.C": "cpp",
+        "ostream": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

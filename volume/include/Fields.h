@@ -18,7 +18,7 @@ const Matrix evaluate( const MatrixField&  v, const Vector& P );
 //MatrixField grad( const VectorField& e ); 
 
 ScalarField constant( const float v );
-VectorField constant( const Vector& v );
+//VectorField constant( const Vector& v );
 ColorField  constant( const Color& v );
 MatrixField constant( const Matrix& v );
 
