@@ -22,17 +22,17 @@ ScalarField constant( const float v );
 ColorField  constant( const Color& v );
 MatrixField constant( const Matrix& v );
 
-//ScalarField scale( const ScalarField& , const Vector& s );
+ScalarField scale( const ScalarField& , const Vector& s );
 //VectorField scale( const VectorField& , const Vector& s );
 //ColorField  scale( const ColorField& , const Vector& s );
 //MatrixField scale( const MatrixField& , const Vector& s );
 
-//ScalarField translate( const ScalarField& , const Vector& s );
+ScalarField translate( const ScalarField& v, const Vector& s);
 //VectorField translate( const VectorField& , const Vector& s );
 //ColorField  translate( const ColorField& , const Vector& s );
 //MatrixField translate( const MatrixField& , const Vector& s );
 
-//ScalarField rotate( const ScalarField& , const Vector& s );
+ScalarField rotate( const ScalarField& , const Vector& s );
 //VectorField rotate( const VectorField& , const Vector& s );
 //ColorField  rotate( const ColorField& , const Vector& s );
 //MatrixField rotate( const MatrixField& , const Vector& s );
@@ -47,7 +47,7 @@ MatrixField exp( const MatrixField& v );
 //ColorField  report( const ColorField& v, const string& tag ); 
 //MatrixField report( const MatrixField& v, const string& tag ); 
 
-//ScalarField negate( const ScalarField& v );
+ScalarField negate( const ScalarField& v );
 //VectorField negate( const VectorField& v );
 //ColorField  negate( const ColorField& v );
 //MatrixField negate( const MatrixField& v );
@@ -60,12 +60,11 @@ MatrixField exp( const MatrixField& v );
 //ColorField  which( const ColorField& v1, const ColorField& v2, const ScalarField& swtch );
 //MatrixField which( const MatrixField& v1, const MatrixField& v2, const ScalarField& swtch );
 
-//ScalarField multiply( const ScalarField& v, const float a ); 
 //ScalarField multiply( const ScalarField& v, const ScalarField& u ); 
 //VectorField multiply( const VectorField& v, const float a ); 
 //VectorField multiply( const VectorField& v, const ScalarField& u ); 
 //ColorField  multiply( const ColorField& v, const float a ); 
-//ColorField  multiply( const ColorField& v, const ScalarField& u ); 
+ColorField  multiply( const ColorField& v, const ScalarField& u ); 
 //ColorField  multiply( const ColorField& v, const ColorField& u ); 
 //MatrixField multiply( const MatrixField& v, const float a ); 
 //MatrixField multiply( const MatrixField& v, const ScalarField& u ); 
@@ -91,26 +90,26 @@ MatrixField add( const MatrixField&  v1, const MatrixField& v2 );
 
 
 ScalarField Sphere( const Vector& cen, const float rad );
-//ScalarField Ellipse( const Vector& cen, const Vector& axs, const float majorrad, const float minorrad ); 
-//ScalarField CsgBox( const Vector& cen, const float rad, const float pwr );
-//ScalarField Cone( const Vector& cen, const Vector& ax, const float h, const float theta );
-//ScalarField Plane( const Vector cen, const Vector norm );
-//ScalarField Torus( const Vector& cen, const Vector& axis, const float majorRad, const float minorRad );
-//ScalarField SteinerPatch(); 
-//ScalarField Icosahedron();
-//ScalarField Cylinder( const Vector axis, const float rad );
+ScalarField Ellipse( const Vector& cen, const float radMaj, const float radMin, const Vector& norm ) ;
+ScalarField Box( const Vector& cen, const float rad, const float q ) ;
+ScalarField Cone( const Vector& cen, const Vector& norm, const float h, const float theta) ;
+ScalarField Plane( const Vector& cen, const Vector& norm, const Vector& pos) ; //no pos?
+ScalarField Torus( const Vector& cen, const float radMaj, const float radMin, const Vector& norm ) ;
+ScalarField SteinerPatch( const Vector& cen) ; //no params?
+ScalarField Icosahedron( const Vector& cen) ; //no params?
+ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius) ; // no center?
 //ScalarField CappedCylinder( const Vector cen, const Vector axis, const float length, const float radius );
 //ScalarField Shell( const ScalarField& v, const float thickness );
 
-//ScalarField mask( const ScalarField& v );
-//ScalarField clamp( const ScalarField& v, float minv, float maxv );
+ScalarField mask( const ScalarField& v );
+ScalarField clamp( const ScalarField& v, float minv, float maxv );
 //ScalarField pow( const ScalarField& v, float gam );
 //ScalarField pow( const ScalarField& v, const ScalarField& gam );
 //ColorField  pow( const ColorField& v, float gam );
 //ColorField  pow( const ColorField& v, const ScalarField& gam );
-//ScalarField Union( const ScalarField& v1, const ScalarField& v2 );
-//ScalarField intersection( const ScalarField& v1, const ScalarField& v2 );
-//ScalarField cutout( const ScalarField& v1, const ScalarField& v2 );
+ScalarField Union( const ScalarField& v1, const ScalarField& v2 );
+ScalarField Intersection( const ScalarField& v1, const ScalarField& v2 );
+ScalarField Cutout( const ScalarField& v1, const ScalarField& v2 );
 
 //ScalarField sin( const ScalarField& v1 );
 //ScalarField cos( const ScalarField& v1 );

@@ -13,7 +13,7 @@
 
 #include <cmath>
 #include <cstdio>
-
+#include <iostream>
 namespace lux
 {
 
@@ -112,7 +112,7 @@ class Vector
    const double magnitude() const 
    { return sqrt( xyz[0]*xyz[0] + xyz[1]*xyz[1] + xyz[2]*xyz[2] ); }
    
-   const Vector unitvector() const { return *this/magnitude(); }
+   const Vector unitvector() const { if(magnitude()!=0) return *this/magnitude(); else{ std::cout<<"error000\n";return *this;} }
 
    void normalize() 
    { double mag = magnitude(); xyz[0] /= mag; xyz[1] /= mag; xyz[2] /= mag; }

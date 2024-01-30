@@ -8,7 +8,10 @@ OFILES = base/Matrix.o \
 	 base/ImplicitVolumeShapes.o \
 	 base/ImplicitVectorShapes.o \
 	 base/ImplicitColors.o \
-	 base/ImplicitMatrixShapes.o 
+	 base/ImplicitMatrixShapes.o \
+	 base/Model.o \
+	 base/ImgProc.o \
+	 base/VolumeRenderer.o
 
 
 ROOTDIR = .
