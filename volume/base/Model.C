@@ -5,7 +5,7 @@ using namespace lux;
 Humanoid::Humanoid()
 {
 
-    Color color( 1,0.2,0,1); Color color2(0,1,0,1); Color black(0,0,0,1); Color blue(0,0,1,1);
+    Color red( 1,0.2,0,1); Color green(0,1,0,1); Color black(0,0,0,1); Color blue(0,0,1,1); Color pink(1, 0.75, 0.8, 1);
 
 
     ScalarField c = constant(-1000);
@@ -21,14 +21,14 @@ Humanoid::Humanoid()
     ScalarField e8 = Ellipse(Vector(2, -1, 1), 0.5, 1.3, Vector(0,1,0));
     ScalarField e9 = Torus(Vector(0,1.8,0.6), 1, 0.5, Vector(0,1,0));
     ScalarField e10 = Torus(Vector(0,0.7,1), 1, 0.9, Vector(0,0,1));
+    ScalarField e11 = Plane(Vector(0,0.7,0.6), Vector(0,1,0), Vector(0,0.7,0.6));
     e10 = Cutout(e10, e11);
     e10 = scale(e10, Vector(0.4,0.4,0.7));
-    ScalarField e11 = Plane(Vector(0,0.7,0.6), Vector(0,1,0), Vector(0,0.7,0.6));
     ScalarField e12 = Box(Vector(0,13.5, 1), 1, 4);
     e12 = scale(e12, Vector(0.55,0.3,0.7));
     ScalarField e13 = Icosahedron();
-    e13 = translate(e13, Vector(6,0,0));
-    e13 = scale(e13, Vector(0.3,0.3,0.3));
+    e13 = translate(e13, Vector(18,4,0));
+    e13 = scale(e13, Vector(0.1,0.1,0.1));
     ScalarField e14 = SteinerPatch(Vector(3,-2,1));
     e14 = rotate(e14, Vector(1,0,0), 45);
     ScalarField e15 = Cone(Vector(0,9,0.5), Vector(0,-1,0), 0.5, 45);
@@ -36,8 +36,8 @@ Humanoid::Humanoid()
     ScalarField e16 = Intersection(e12, e15);
     e16 = translate(e16, Vector(0,-0.3,-0.75));
     ScalarField e17 = Icosahedron();
-    e17 = translate(e17, Vector(-6,0,0));
-    e17 = scale(e17, Vector(0.3,0.3,0.3));
+    e17 = translate(e17, Vector(-18,4,0));
+    e17 = scale(e17, Vector(0.1,0.1,0.1));
 
     ScalarField u1 = Union(c, Union(e2,e9)); //head and eyes
     u1 = Union(u1, e1); //horns
@@ -53,19 +53,19 @@ Humanoid::Humanoid()
     u1 = Union(u1, e17); // tattoo
 
     ColorField e1Color = constant(Color(0,0,0,0)); //start with black
-    e1Color = e1Color *mask(-e1) + constant(color)*mask(e1); //horn color
-    e1Color = e1Color *mask(-e2) + constant(color2)*mask(e2); //head color
-    e1Color = e1Color *mask(-e4) + constant(color2)*mask(e4); //torso color
-    e1Color = e1Color *mask(-e5) + constant(color2)*mask(e5); //left feet color
-    e1Color = e1Color *mask(-e6) + constant(color2)*mask(e6); //right feet color
-    e1Color = e1Color *mask(-e7) + constant(color2)*mask(e7); //left arm color
-    e1Color = e1Color *mask(-e8) + constant(color2)*mask(e8); //right arm color
+    e1Color = e1Color *mask(-e1) + constant(red)*mask(e1); //horn color
+    e1Color = e1Color *mask(-e2) + constant(green)*mask(e2); //head color
+    e1Color = e1Color *mask(-e4) + constant(green)*mask(e4); //torso color
+    e1Color = e1Color *mask(-e5) + constant(green)*mask(e5); //left feet color
+    e1Color = e1Color *mask(-e6) + constant(green)*mask(e6); //right feet color
+    e1Color = e1Color *mask(-e7) + constant(green)*mask(e7); //left arm color
+    e1Color = e1Color *mask(-e8) + constant(green)*mask(e8); //right arm color
     e1Color = e1Color *mask(-e9) + constant(black)*mask(e9); //eyes color
-    e1Color = e1Color *mask(-e10) + constant(color)*mask(e10); //mouth color
-    e1Color = e1Color *mask(-e13) + constant(blue)*mask(e13); //ico color
-    e1Color = e1Color *mask(-e14) + constant(color)*mask(e14); //stei color
-    e1Color = e1Color *mask(-e16) + constant(color)*mask(e16); //hat color
-    e1Color = e1Color *mask(-e17) + constant(blue)*mask(e17); //ico color
+    e1Color = e1Color *mask(-e10) + constant(red)*mask(e10); //mouth color
+    e1Color = e1Color *mask(-e13) + constant(pink)*mask(e13); //ico color
+    e1Color = e1Color *mask(-e14) + constant(blue)*mask(e14); //stei color
+    e1Color = e1Color *mask(-e16) + constant(red)*mask(e16); //hat color
+    e1Color = e1Color *mask(-e17) + constant(pink)*mask(e17); //ico color
 
 
 

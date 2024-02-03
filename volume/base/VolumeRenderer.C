@@ -65,13 +65,13 @@ void VolumeRenderer::display()
     for(int i = start; i < end; i++)
     {
         Vector eye, view;
-        double cam_distance = 10;
+        double cam_distance = 15;
         if(rotate_table)
         {
             int last  = (end-1 == 0) ? 1 : end - 1;
             double angleDegrees = 360.0 * i / (last);
             double angleRadians = angleDegrees * M_PI / 180.0;
-            eye = Vector(cam_distance * sin(angleRadians), 6, cam_distance * cos(angleRadians));
+            eye = Vector(cam_distance * sin(angleRadians), 0, cam_distance * cos(angleRadians));
             view = -(eye.unitvector());
         }
         else
