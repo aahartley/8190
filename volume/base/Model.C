@@ -19,7 +19,7 @@ Humanoid::Humanoid()
     ScalarField e6 = Ellipse(Vector(.5, -4, 0.5), .3, .6, Vector(0,1,0)); 
     ScalarField e7 = Ellipse(Vector(-2, -1, 1), 0.5, 1.3, Vector(0,1,0));
     ScalarField e8 = Ellipse(Vector(2, -1, 1), 0.5, 1.3, Vector(0,1,0));
-    ScalarField e9 = Torus(Vector(0,1.8,0.6), 1, 0.5, Vector(0,1,0));
+    ScalarField e9 = Torus(Vector(0,1.8,1.5), 1, 0.5, Vector(0,1,0));
     ScalarField e10 = Torus(Vector(0,0.7,1), 1, 0.9, Vector(0,0,1));
     ScalarField e11 = Plane(Vector(0,0.7,0.6), Vector(0,1,0), Vector(0,0.7,0.6));
     e10 = Cutout(e10, e11);
@@ -63,14 +63,14 @@ Humanoid::Humanoid()
     e1Color = e1Color *mask(-e9) + constant(black)*mask(e9); //eyes color
     e1Color = e1Color *mask(-e10) + constant(red)*mask(e10); //mouth color
     e1Color = e1Color *mask(-e13) + constant(pink)*mask(e13); //ico color
-    e1Color = e1Color *mask(-e14) + constant(blue)*mask(e14); //stei color
+    e1Color = e1Color *mask(-e14) + constant(Color(1,1,1,1))*mask(e14); //stei color
     e1Color = e1Color *mask(-e16) + constant(red)*mask(e16); //hat color
     e1Color = e1Color *mask(-e17) + constant(pink)*mask(e17); //ico color
 
 
 
-    ScalarField density = mask(u1);
-    //ScalarField density = clamp(u1, 0.0, 1.0);
+    //ScalarField density = mask(u1);
+    ScalarField density = clamp(u1, 0.0, 1.0);
 
     densityfield = density;
     colorfield = e1Color;
