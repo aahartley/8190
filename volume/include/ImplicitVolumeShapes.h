@@ -194,7 +194,7 @@ class AddVolume : public Volume<float>
   
      //RotateVolume( Volume<float> * v, const Vector& s );
   
-     RotateVolume( const ScalarField& v, const Vector& s );
+     RotateVolume( const ScalarField& v, const Vector& axis, float angle );
   
      ~RotateVolume(){}
   
@@ -218,7 +218,8 @@ class AddVolume : public Volume<float>
    private:
   
      const ScalarField elem;
-     Vector rotate;
+     const Vector axis;
+     float angle;
  };
 
 class UnionVolume : public Volume<float>
@@ -480,7 +481,7 @@ class IcosahedronVolume : public Volume<float>
 {
   public:
 
-    IcosahedronVolume( const Vector& cen) ;
+    IcosahedronVolume() ;
 
    ~IcosahedronVolume(){}
 
@@ -489,12 +490,11 @@ class IcosahedronVolume : public Volume<float>
 
     //const Vector grad(  const Vector& P ) const; 
 
-    virtual std::string typelabel() { return std::string("Plane"); }
+    virtual std::string typelabel() { return std::string("Ico"); }
 
 
-  private:
+ 
 
-    Vector center;
 };
 
 class SteinerPatchVolume : public Volume<float> 

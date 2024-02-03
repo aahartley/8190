@@ -32,6 +32,7 @@ class VolumeRenderer
     int start, end;
     img::ImgProc* imgProc;
     Camera* camera;
+    bool rotate_table;
 
 };
 

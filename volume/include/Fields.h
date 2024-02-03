@@ -32,7 +32,7 @@ ScalarField translate( const ScalarField& v, const Vector& s);
 //ColorField  translate( const ColorField& , const Vector& s );
 //MatrixField translate( const MatrixField& , const Vector& s );
 
-ScalarField rotate( const ScalarField& , const Vector& s );
+ScalarField rotate( const ScalarField& , const Vector& s, float a );
 //VectorField rotate( const VectorField& , const Vector& s );
 //ColorField  rotate( const ColorField& , const Vector& s );
 //MatrixField rotate( const MatrixField& , const Vector& s );
@@ -96,7 +96,7 @@ ScalarField Cone( const Vector& cen, const Vector& norm, const float h, const fl
 ScalarField Plane( const Vector& cen, const Vector& norm, const Vector& pos) ; //no pos?
 ScalarField Torus( const Vector& cen, const float radMaj, const float radMin, const Vector& norm ) ;
 ScalarField SteinerPatch( const Vector& cen) ; //no params?
-ScalarField Icosahedron( const Vector& cen) ; //no params?
+ScalarField Icosahedron( ) ;
 ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius) ; // no center?
 //ScalarField CappedCylinder( const Vector cen, const Vector axis, const float length, const float radius );
 //ScalarField Shell( const ScalarField& v, const float thickness );

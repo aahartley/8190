@@ -105,7 +105,7 @@ BoxVolume::BoxVolume( const Vector& cen, const float rad, const float q ) :
 const float BoxVolume::eval( const Vector& P ) const 
 {
    Vector x = P-center;
-   return std::pow(radius, 2*q) - std::pow(x.X(), 2*q) - std::pow(x.Y(), 2*q) - std::pow(x.Z(), 2*q);
+   return std::pow(radius, 2*q) - (std::pow(fabs(x.X()), 2*q) + std::pow(fabs(x.Y()), 2*q) + std::pow(fabs(x.Z()), 2*q));
 }
 
 
@@ -157,15 +157,14 @@ const float CylinderVolume::eval( const Vector& P ) const
    return radius - (x - ((x*normal)*normal)).magnitude();
 }
 
-IcosahedronVolume::IcosahedronVolume( const Vector& cen) :
-       center (cen)
+IcosahedronVolume::IcosahedronVolume( ) 
       
     {}
 
 
 const float IcosahedronVolume::eval( const Vector& P ) const 
 {
-   Vector x = P-center;
+   Vector x = P;
    float T = 1.61803399; // golden ratio
    if(x.magnitude() <= 1.8 * M_PI)
    {
@@ -187,8 +186,8 @@ const float SteinerPatchVolume::eval( const Vector& P ) const
 {
    Vector x = P-center;
 
-   return -1*( ((x.X()*x.X()) * (x.Y()*x.Y())) + ((x.X()*x.X()) * (x.Z()*x.Z())) +
-               ((x.Y()*x.Y()) * (x.Z()*x.Z())) - (x.X()*x.Y()*x.Z()) );
+   return -( (x.X()*x.X()) * (x.Y()*x.Y()) + (x.X()*x.X()) * (x.Z()*x.Z()) +
+               (x.Y()*x.Y()) * (x.Z()*x.Z()) - x.X()*x.Y()*x.Z() );
 }
 
 
@@ -255,18 +254,19 @@ const Vector ScaleVolume::grad( const Vector& P ) const
    return  elem->grad(P); //fix
 }
 
-RotateVolume::RotateVolume( const ScalarField& v, const Vector& s ) :
+RotateVolume::RotateVolume( const ScalarField& v, const Vector& s, float a ) :
       elem(v),
-      rotate(s)
+      axis(s),
+      angle(a)
    {}
 
 const float RotateVolume::eval( const Vector& P ) const
 {
-   Vector axis = rotate.unitvector();
-	float sina = (cos(rotate.magnitude()*M_PI/180.0));
-	float cosa = (sin(rotate.magnitude()*M_PI/180.0));
+   Vector axisNorm = axis.unitvector();
+	float sina = (sin(angle*M_PI/180.0));
+	float cosa = (cos(angle*M_PI/180.0));
 
-   Vector X = P*cosa + (axis*P)*(1.0-cosa)*axis + (axis^P)*sina;
+   Vector X = P*cosa + axisNorm *(axisNorm*P)*(1.0-cosa)+ (axisNorm^P)*sina;
 
    return  elem->eval(X); 
 }

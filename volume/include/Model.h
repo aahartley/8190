@@ -17,16 +17,23 @@ class Model
     virtual ~Model() {}
 
     virtual void display() {}
+
+    ScalarField& getDensityField()  {return densityfield;}
+    ColorField& getColorField()  {return colorfield;}
+
+  protected:
+    ScalarField densityfield;
+    ColorField colorfield;
 };
 
 
 class Humanoid : public Model
 {
   public:
-    Humanoid() {}
+    Humanoid();
     virtual ~Humanoid() {}
 
-    void display();
+ 
 };
 
 

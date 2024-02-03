@@ -58,7 +58,7 @@ ScalarField Cone( const Vector& cen, const Vector& norm, const float h, const fl
 ScalarField Plane( const Vector& cen, const Vector& norm, const Vector& pos) { return ScalarField( new PlaneVolume(cen, norm, pos) ); }
 ScalarField Torus( const Vector& cen, const float radMaj, const float radMin, const Vector& norm ) { return ScalarField( new TorusVolume(cen, radMaj, radMin, norm) ); }
 ScalarField SteinerPatch( const Vector& cen) { return ScalarField( new SteinerPatchVolume(cen) ); } 
-ScalarField Icosahedron( const Vector& cen) { return ScalarField( new IcosahedronVolume(cen) ); }
+ScalarField Icosahedron( ) { return ScalarField( new IcosahedronVolume() ); }
 ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius) { return ScalarField( new CylinderVolume(cen, norm, radius) ); }
 
 
@@ -68,7 +68,7 @@ ScalarField Cutout( const ScalarField& v1, const ScalarField& v2 ) { return Scal
 
 ScalarField translate( const ScalarField& v, const Vector& s ) { return ScalarField( new TranslateVolume(v, s)); }
 ScalarField scale( const ScalarField& v, const Vector& s ) { return ScalarField( new ScaleVolume(v, s)); }
-ScalarField rotate( const ScalarField& v, const Vector& s ) { return ScalarField( new RotateVolume(v, s)); }
+ScalarField rotate( const ScalarField& v, const Vector& s , float a) { return ScalarField( new RotateVolume(v, s, a)); }
 
 
 
