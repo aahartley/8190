@@ -53,14 +53,6 @@ void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds,
 
 void VolumeRenderer::display()
 {
-    ScalarField e2 = Plane(Vector(0,0,0), Vector(0,1,0), Vector(0,0,0));
-    ScalarField e1 = Torus(Vector(0,0,0), 2, 1, Vector(0,0,1));
-    ScalarField e3 = SteinerPatch(Vector(0,0,0));
-    e1 = Cutout(e1, e2);
-    ScalarField density = clamp(e3, 0.0,1.0);
-    density = mask(e3);
-    ColorField colorfield = constant(Color(1,0,0,1));
-
     ProgressMeter* pm = new ProgressMeter(end,"demo");
     for(int i = start; i < end; i++)
     {
@@ -79,9 +71,9 @@ void VolumeRenderer::display()
             eye = Vector(0,0,cam_distance); view = Vector(0,0,-1);
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 0.1, 1, models[0]->getDensityField(), models[0]->getColorField() );
-        //raymarch(1, 20, 0, 0.9, 1, density, colorfield );
+        raymarch(1, 20, 0, 0.3, 1, models[0]->getDensityField(), models[0]->getColorField() );
         imgProc->write_image("image_"+std::to_string(i), 'o');
+        imgProc->write_image("image_"+std::to_string(i), 'j');
         pm->update();
 
     }
