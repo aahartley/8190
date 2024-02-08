@@ -263,8 +263,8 @@ RotateVolume::RotateVolume( const ScalarField& v, const Vector& s, float a ) :
 const float RotateVolume::eval( const Vector& P ) const
 {
    Vector axisNorm = axis.unitvector();
-	float sina = (sin(angle*M_PI/180.0));
-	float cosa = (cos(angle*M_PI/180.0));
+	float sina = (std::sin(angle*M_PI/180.0));
+	float cosa = (std::cos(angle*M_PI/180.0));
 
    Vector X = P*cosa + axisNorm *(axisNorm*P)*(1.0-cosa)+ (axisNorm^P)*sina;
 

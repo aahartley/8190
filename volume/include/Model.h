@@ -8,32 +8,46 @@
 
 namespace lux
 {
+class ModelBase
+{
+  public:
+    ModelBase(){}
+    virtual ~ModelBase(){}
+};
 
-
-class Model
+template< typename U >
+class Model : ModelBase
 {
   public:
     Model(){}
     virtual ~Model() {}
 
-    virtual void display() {}
+    typedef U model_type;
 
-    ScalarField& getDensityField()  {return densityfield;}
-    ColorField& getColorField()  {return colorfield;}
+    model_type& getDensityField() {return densityfield;}
+    ColorField& getColorField() {return colorfield;}
 
   protected:
-    ScalarField densityfield;
+    model_type densityfield;
     ColorField colorfield;
 };
+typedef std::shared_ptr<Model<ScalarField>> ScalarModelBase;
 
+class ScalarModel : public ScalarModelBase
+{
+  public:
+    ScalarModel() :  std::shared_ptr<Model<ScalarField> >() {}
+    ScalarModel(Model<ScalarField>* m) : std::shared_ptr<Model<ScalarField> >( m) {}
+    ~ScalarModel() {}
 
-class Humanoid : public Model
+ 
+};
+
+class Humanoid : public Model<ScalarField>
 {
   public:
     Humanoid();
-    virtual ~Humanoid() {}
-
- 
+    ~Humanoid(){}
 };
 
 

@@ -16,22 +16,21 @@ class VolumeRenderer
 {
   public:
     VolumeRenderer(){}
-    VolumeRenderer(int frames);
     VolumeRenderer(int startFrame, int endFrame);
     ~VolumeRenderer(){}
 
-    void addModel(Model* m) { models.push_back(m);}
-    void addImgProc(img::ImgProc* imgP) { imgProc = imgP;}
-    void addCam(Camera* cam){camera = cam;}
-    void display();
-    void raymarch(double snear, double sfar, double Tmin, double ds, double kappa, ScalarField& density, ColorField& Cm);
-    int getStart(){return start;}
+    void addScalarModel(ScalarModel m) { scalar_models.push_back(m);}
+    void addImgProc(std::shared_ptr<img::ImgProc> imgP) { imgProc = imgP;}
+    void addCam(std::shared_ptr<Camera> cam){camera = cam;}
+    void generate_frames();
+    template <typename U>
+    void raymarch(double snear, double sfar, double Tmin, double ds, double kappa, U& density, ColorField& Cm);
 
   private:
-    std::vector<Model*> models;
+    std::vector<ScalarModel> scalar_models;
     int start, end;
-    img::ImgProc* imgProc;
-    Camera* camera;
+    std::shared_ptr<img::ImgProc> imgProc;
+    std::shared_ptr<Camera> camera;
     bool rotate_table;
 
 };

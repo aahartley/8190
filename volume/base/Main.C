@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 {
 
     VolumeRenderer* renderer = nullptr;
-    img::ImgProc* imgProc = new img::ImgProc();
-    Camera* camera = new Camera();
+    std::shared_ptr<img::ImgProc> imgProc (new img::ImgProc());
+    std::shared_ptr<Camera> camera ( new Camera());
     imgProc->clear(1920, 1080, 4);
     std::vector<std::string> args;
     for(int i = 0; i < argc; i++)
@@ -30,12 +30,12 @@ int main(int argc, char** argv)
     }
     else
     {
-        Model* m1 = new Humanoid();
-        renderer->addModel(m1);
+        ScalarModel m1 (new Humanoid());
+        renderer->addScalarModel(m1);
         renderer->addImgProc(imgProc);
         renderer->addCam(camera);
-        renderer->display();
-
+        renderer->generate_frames();
+        delete renderer;
         return 0;
     }
 }
@@ -63,21 +63,8 @@ int cmdLine(std::vector<std::string>& args, VolumeRenderer** renderer)
                         return 1;
                     }
                 }
-                else if(args.size() == 3)
-                {
-                    if(std::isdigit(static_cast<unsigned char>(args[i+1].at(0))))
-                    {
-                        start = 0; end = std::stoi(args[i+1]);
-                        *renderer = new VolumeRenderer(end);
-                        return 0;
-                    }
-                    else
-                    {
-                        std::cout << "number please\n";
-                        return 1;
-                    }
-                }
-            
+              
+
             }
         }
     }
