@@ -62,7 +62,7 @@ void VolumeRenderer::generate_frames()
             eye = Vector(0,0,cam_distance); view = Vector(0,0,-1);
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 4, 1, models->getClampedDensityField(0,1), models->getColorField() );
+        raymarch(1, 20, 0, 0.3, 1, models->getClampedDensityField(0,1), models->getColorField() );
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         imgProc->write_image("test"+std::to_string(i), 'j');
