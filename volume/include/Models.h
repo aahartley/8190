@@ -14,7 +14,7 @@ namespace lux
 class Models
 {
   public:
-    Models(){ scalar_volumes_unioned = constant(-1000); colorfield = constant(Color(0,0,0,0));}
+    Models(){scalar_volumes_unioned = constant(-1000);  colorfield = constant(Color(0,0,0,0));}
     ~Models(){}
 
     void addScalarModel(ScalarField& model, Color& color);

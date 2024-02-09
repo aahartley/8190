@@ -11,6 +11,7 @@ void Models::addScalarModel(ScalarField& model, Color& color)
 }
 
 
+
 void Models::addHumanoid()
 {
 
@@ -48,9 +49,9 @@ void Models::addHumanoid()
     e17 = translate(e17, Vector(-18,4,0));
     e17 = scale(e17, Vector(0.1,0.1,0.1));
 
+    addScalarModel(e1, red);
     addScalarModel(e2, green);
     addScalarModel(e9, red);
-    addScalarModel(e1, red);
     addScalarModel(e4, green);
     addScalarModel(e5, green);
     addScalarModel(e6, green);
