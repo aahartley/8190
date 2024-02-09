@@ -9,8 +9,7 @@ VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
     rotate_table = true;
 }
 
-template <typename U>
-void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds, double kappa, U& density, ColorField& Cm)
+void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds, double kappa, ScalarField& density, ColorField& Cm)
 {
     #pragma omp parallel for collapse(2)
     for(int j = 0; j < imgProc->ny(); j++)
@@ -63,7 +62,7 @@ void VolumeRenderer::generate_frames()
             eye = Vector(0,0,cam_distance); view = Vector(0,0,-1);
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 4, 1, scalar_models[0]->getDensityField(), scalar_models[0]->getColorField() );
+        raymarch(1, 20, 0, 4, 1, models->getClampedDensityField(0,1), models->getColorField() );
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         imgProc->write_image("test"+std::to_string(i), 'j');

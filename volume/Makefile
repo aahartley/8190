@@ -9,7 +9,7 @@ OFILES = base/Matrix.o \
 	 base/ImplicitVectorShapes.o \
 	 base/ImplicitColors.o \
 	 base/ImplicitMatrixShapes.o \
-	 base/Model.o \
+	 base/Models.o \
 	 base/ImgProc.o \
 	 base/VolumeRenderer.o
 

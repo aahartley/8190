@@ -68,7 +68,8 @@
         "ratio": "cpp",
         "regex": "cpp",
         "shared_mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "Models.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

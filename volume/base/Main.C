@@ -30,8 +30,10 @@ int main(int argc, char** argv)
     }
     else
     {
-        ScalarModel m1 (new Humanoid());
-        renderer->addScalarModel(m1);
+        std::shared_ptr<Models> models(new Models());
+        models->addHumanoid();
+        
+        renderer->addModels(models);
         renderer->addImgProc(imgProc);
         renderer->addCam(camera);
         renderer->generate_frames();
