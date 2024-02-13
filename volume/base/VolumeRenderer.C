@@ -17,7 +17,7 @@ void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds,
  		for(int i = 0; i < imgProc->nx(); i++)
  		{
   
-            Vector direction = camera->view((double)i/(double)(imgProc->nx()-1),(double)j/(double)(imgProc->ny()-1));
+            Vector direction = camera->view((double)i/(double)(imgProc->nx()-1), (double)j/(double)(imgProc->ny()-1));
             double T = 1;
             Color L(0,0,0,0);
             double s = snear;
@@ -44,7 +44,7 @@ void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds,
 
 void VolumeRenderer::generate_frames()
 {
-    ProgressMeter pm (end,"demo");
+    ProgressMeter pm (end-start,"demo");
     for(int i = start; i < end; i++)
     {
         Vector eye, view;

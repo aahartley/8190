@@ -10,7 +10,25 @@ void Models::addScalarModel(ScalarField& model, Color& color)
 
 }
 
+ScalarField& Models::getMaskedDensityField() 
+{
+    GridBox gb = makeGridBox(Vector(-10,-10,-10), Vector(10,10,10), Vector(0.1,0.1,0.1));
+    ScalarGrid grid = makeGrid(gb, 0.f);
+    density = mask(scalar_volumes_unioned);
+    stamp(grid, density, 1);
+    density = gridded(grid);
+    return density;
+}
 
+ScalarField& Models::getClampedDensityField(float min, float max) 
+{
+    GridBox gb = makeGridBox(Vector(-15,-15,-15), Vector(15,15,15), Vector(0.1,0.1,0.1));
+    ScalarGrid grid = makeGrid(gb, -1000.f);
+    density = clamp(scalar_volumes_unioned, min, max);
+    stamp(grid, density, 1);
+    density = gridded(grid);
+    return density;
+}
 
 void Models::addHumanoid()
 {
@@ -48,6 +66,7 @@ void Models::addHumanoid()
     ScalarField e17 = Icosahedron();
     e17 = translate(e17, Vector(-18,4,0));
     e17 = scale(e17, Vector(0.1,0.1,0.1));
+
 
     addScalarModel(e1, red);
     addScalarModel(e2, green);

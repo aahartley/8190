@@ -138,7 +138,7 @@ const float ConeVolume::eval( const Vector& P ) const
    if(x*normal < 0) return x * normal;
    else if(x*normal > h) return h -(x * normal);
    else if ( x*normal < h && x*normal > 0) return (x*normal) - (x.magnitude() * std::cos((thetaMax * M_PI)/180));
-   else return 0;
+   else return -1;
 }
 
 CylinderVolume::CylinderVolume( const Vector& cen, const Vector& norm, const float rad) :
@@ -357,4 +357,13 @@ const float ClampVolume::eval(const Vector& P) const
 const Vector ClampVolume::grad(const Vector& P) const
 {
    return elem->grad(P);
+}
+
+
+GriddedSGridVolume::GriddedSGridVolume(const ScalarGrid& g) :scgrid(g)
+{ }
+
+const float GriddedSGridVolume::eval(const Vector& P) const
+{
+   return scgrid->eval(P);
 }

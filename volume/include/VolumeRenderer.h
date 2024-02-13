@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "Camera.h"
 #include "Models.h"
-#include "Fields.h"
+//#include "Fields.h"
 #include "ProgressMeter.h"
 #include "ImgProc.h"
 

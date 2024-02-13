@@ -4,7 +4,8 @@
 #include "Fields.h"
 #include "ImplicitVolumeShapes.h"
 #include "ImplicitVectorShapes.h"
-#include "Volume.h"
+#include "FullGrids.h"
+#include "Grids.h"
 
 namespace lux
 {
@@ -19,8 +20,8 @@ class Models
 
     void addScalarModel(ScalarField& model, Color& color);
     void addHumanoid();
-    ScalarField& getMaskedDensityField() { return density = mask(scalar_volumes_unioned); }
-    ScalarField& getClampedDensityField(float min, float max) { return density = clamp(scalar_volumes_unioned, min, max); }
+    ScalarField& getMaskedDensityField();
+    ScalarField& getClampedDensityField(float min, float max) ;
     ColorField& getColorField() { return colorfield; }
 
   private:

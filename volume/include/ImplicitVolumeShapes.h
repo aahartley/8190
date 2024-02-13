@@ -3,6 +3,7 @@
 #define __IMPLICITVOLUMESHAPES_H__
 
 #include "Volume.h"
+#include "FullGrids.h"
 #include "LinearAlgebra.h"
 #include <cmath>
 #include <vector>
@@ -517,6 +518,38 @@ class SteinerPatchVolume : public Volume<float>
 
     Vector center;
 };
+
+
+
+
+ class GriddedSGridVolume : public Volume<float> 
+ {
+   public:
+  
+     GriddedSGridVolume( const ScalarGrid& g );
+  
+    ~GriddedSGridVolume(){}
+  
+     const float eval( const Vector& P ) const;
+     //const Vector grad(  const Vector& P ) const;
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "Gridded";
+       return lbl;
+    }
+  
+   private:
+  
+     ScalarGrid scgrid;
+     float dx, dy, dz;
+ };
+  
+
+
+
+
+
 
 }
 

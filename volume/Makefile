@@ -2,6 +2,8 @@
 OFILES = base/Matrix.o \
 	 base/Volume.o \
 	 base/Fields.o \
+	 base/FullGrids.o\
+	 base/Grids.o\
 	 base/LinearAlgebra.o \
 	 base/Camera.o \
 	 base/Color.o \
@@ -9,9 +11,9 @@ OFILES = base/Matrix.o \
 	 base/ImplicitVectorShapes.o \
 	 base/ImplicitColors.o \
 	 base/ImplicitMatrixShapes.o \
-	 base/Models.o \
 	 base/ImgProc.o \
-	 base/VolumeRenderer.o
+	 base/Models.o \
+	 base/VolumeRenderer.o\
 
 
 ROOTDIR = .

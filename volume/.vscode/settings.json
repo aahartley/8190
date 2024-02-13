@@ -69,7 +69,11 @@
         "regex": "cpp",
         "shared_mutex": "cpp",
         "thread": "cpp",
-        "Models.C": "cpp"
+        "Models.C": "cpp",
+        "FullGrid.C": "cpp",
+        "FullGrids.C": "cpp",
+        "Grids.C": "cpp",
+        "testt.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
