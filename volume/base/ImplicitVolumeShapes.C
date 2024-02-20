@@ -37,6 +37,19 @@ const Vector ExpVolume::grad( const Vector& P ) const { return eval(P) * elem->g
 
 
 
+MultiplyVolume::MultiplyVolume( const ScalarField& v , const ScalarField& v2) :
+      e1 (v), e2(v2)
+    {}
+
+const float MultiplyVolume::eval( const Vector& P ) const 
+{
+   return std::exp( e1->eval(P) * e2->eval(P) ); 
+}
+
+// const Vector MultiplyVolume::grad( const Vector& P ) const { return e1->grad(P) * e2->grad(P); }
+
+
+
 
 SphereVolume::SphereVolume( const Vector& cen, const float rad ) :
        center (cen),

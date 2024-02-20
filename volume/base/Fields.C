@@ -24,7 +24,7 @@ MatrixField MatrixField::operator+( const MatrixField& e2 ) { return MatrixField
 ScalarField ScalarField::operator-( ) { return negate(*this); }
 
 
-//ScalarField ScalarField::operator*( const ScalarField& e2 ) { return multiply(*this,e2); }
+ScalarField ScalarField::operator*( const ScalarField& e2 ) { return multiply(*this,e2); }
 ColorField ColorField::operator*( const ScalarField& e2 ) { return multiply(*this,e2); }
 
 ScalarField constant( const float v ) { return ScalarField( new ConstantVolume(v) ); }
@@ -48,7 +48,7 @@ MatrixField add( const MatrixField&  v1, const MatrixField& v2 ) { return Matrix
 ScalarField negate( const ScalarField&  v1) { return ScalarField(new NegateVolume(v1));}
 
 
-//ScalarField multiply( const ScalarField&  v1, const ScalarField& v2 )   { return ScalarField(new MultiplyVolume(v1,v2)); }
+ScalarField multiply( const ScalarField&  v1, const ScalarField& v2 )   { return ScalarField(new MultiplyVolume(v1,v2)); }
 ColorField  multiply( const ColorField&  v1, const ScalarField& v2 )   { return ColorField(new MultiplyColor(v1,v2)); }
 
 ScalarField Sphere( const Vector& cen, const float rad ) { return ScalarField( new SphereVolume(cen, rad) ); }

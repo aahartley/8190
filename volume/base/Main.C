@@ -17,6 +17,7 @@ int main(int argc, char** argv)
     VolumeRenderer* renderer = nullptr;
     std::shared_ptr<img::ImgProc> imgProc (new img::ImgProc());
     std::shared_ptr<Camera> camera ( new Camera());
+    std::shared_ptr<Models> models(new Models());
     imgProc->clear(1920, 1080, 4);
     std::vector<std::string> args;
     for(int i = 0; i < argc; i++)
@@ -30,14 +31,15 @@ int main(int argc, char** argv)
     }
     else
     {
-        std::shared_ptr<Models> models(new Models());
         models->addHumanoid();
-        
+        models->addOBJModel("models/bunny/bunny.obj");
+        //models->addOBJModel("models/ajax/smallajax.obj");
+
         renderer->addModels(models);
         renderer->addImgProc(imgProc);
         renderer->addCam(camera);
         renderer->generate_frames();
-        delete renderer;
+        //delete renderer;
         return 0;
     }
 }

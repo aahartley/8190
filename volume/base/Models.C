@@ -2,7 +2,7 @@
 
 using namespace lux;
 
-void Models::addScalarModel(ScalarField& model, Color& color)
+void Models::addScalarModel(ScalarField& model, Color color)
 {
     scalar_volumes_unioned = Union(scalar_volumes_unioned, model);
 
@@ -10,24 +10,389 @@ void Models::addScalarModel(ScalarField& model, Color& color)
 
 }
 
-ScalarField& Models::getMaskedDensityField() 
+ScalarField Models::getMaskedDensityField() 
 {
-    GridBox gb = makeGridBox(Vector(-10,-10,-10), Vector(10,10,10), Vector(0.1,0.1,0.1));
-    ScalarGrid grid = makeGrid(gb, 0.f);
-    density = mask(scalar_volumes_unioned);
-    stamp(grid, density, 1);
-    density = gridded(grid);
-    return density;
+
+    return density = mask(scalar_volumes_unioned);
 }
 
-ScalarField& Models::getClampedDensityField(float min, float max) 
+ScalarField Models::getClampedDensityField(float min, float max) 
 {
-    GridBox gb = makeGridBox(Vector(-15,-15,-15), Vector(15,15,15), Vector(0.1,0.1,0.1));
-    ScalarGrid grid = makeGrid(gb, -1000.f);
-    density = clamp(scalar_volumes_unioned, min, max);
-    stamp(grid, density, 1);
-    density = gridded(grid);
-    return density;
+    return density = clamp(scalar_volumes_unioned, min, max);
+
+}
+
+
+ScalarField Models::getGriddedMaskedDensityField() 
+{
+
+    ScalarGrid dgrid = makeGrid(gb, 0.f);
+    density = mask(scalar_volumes_unioned);
+    stamp(dgrid, density, 1);
+    return gridded(dgrid);
+    
+}
+
+
+ScalarField Models::getGriddedClampedDensityField(float min, float max) 
+{
+    ScalarGrid dgrid = makeGrid(gb, 0.f);
+    density = clamp(getGriddedVolumesUnioned(), min, max);
+    stamp(dgrid, density, 1);
+    return gridded(dgrid);
+}
+
+
+ColorField Models::getGriddedColorField() 
+{
+    ColorGrid cgrid = makeGrid(gb, Color(0,0,0,0));
+    stamp(cgrid, colorfield, 1);
+    return gridded(cgrid);
+}
+
+ScalarField Models::getGriddedVolumesUnioned()
+{
+    ScalarGrid mgrid = makeGrid(gb, -10000.f);
+    stamp(mgrid,scalar_volumes_unioned , 1);
+    return gridded(mgrid);
+}
+
+float Models::calcDistance(Vector& x_ijk, Triangle& T)
+{
+    Vector D = T.v1 - x_ijk;
+    float a = T.e1 * T.e1;
+    float b = T.e1 * T.e2;
+    float c = T.e2 * T.e2;
+    float d = T.e1 * D;
+    float e = T.e2 * D;
+    float f = D * D;
+
+    float s = b * e - c*d;
+    float t = b*d - a*e;
+    float det = a*c - b*b;
+    if(s + t <= det)
+    {
+        if(s < 0)
+        {
+            if(t < 0)
+            {
+                //region 4
+                if( d<0)
+                {
+                    t = 0;
+                    if(-d >=a)
+                    {
+                        s = 1;
+                    }
+                    else 
+                    {
+                        s =-d/a;
+                    }
+                }
+                else
+                {
+                    s =0;
+                    if(e>=0)
+                    {
+                        t = 0;
+                    }
+                    else if( -e>=c)
+                    {
+                        t=1;
+                    }
+                    else
+                    {
+                        t = -e/c;
+                    }
+                }
+            }
+            else
+            {
+                //region 3
+                s = 0;
+                if(e >= 0)
+                {
+                    t =0;
+                }
+                else if(-e >= c)
+                {
+                    t =1;
+                }
+                else
+                {
+                    t = -e/c;
+                }
+            }
+        }
+        else if(t < 0)
+        {
+            //region 5
+            t = 0;
+            if(d >=0)
+            {
+                s =0;
+            }
+            else if( -d >= a)
+            {
+                s = 1;
+            }
+            else
+            {
+                s = -d/a;
+            }
+        }
+        else
+        {
+            //region 0
+            s /= det;
+            t /= det;
+        }
+    }
+    else
+    {
+        if(s < 0)
+        {
+            //region 2
+            float tmp0 = b +d;
+            float tmp1 = c+e;
+            if(tmp1 > tmp0)
+            {
+                float numer = tmp1 - tmp0;
+                float denom = a -2 * b+c;
+                if(numer >= denom)
+                {
+                    s = 1;
+                }
+                else
+                {
+                    s = numer/denom;
+                }
+                t = 1-s;
+            }
+            else
+            {
+                s = 0;
+                if(tmp1 <= 0)
+                {
+                    t = 1;
+                }
+                else if( e>=0)
+                {
+                    t = 0;
+                }
+                else
+                {
+                    t = -e/c;
+                }
+            }
+        }
+        else if( t < 0)
+        {
+            //region 6
+            float tmp0 = b+e;
+            float tmp1 = a+d;
+            if(tmp1 > tmp0)
+            {
+                float numer = tmp1 - tmp0;
+                float denom = a -2 * b+c;
+                if( numer >= denom)
+                {
+                    t = 1;
+                }
+                else
+                {
+                    t = numer/ denom;
+                }
+                s = 1 -t;
+            }
+            else
+            {
+                t = 0;
+                if(tmp1 <= 0)
+                {
+                    s = 1;
+                }
+                else if ( d >=0)
+                {
+                    s =0;
+                }
+                else
+                {
+                    s = -d/a;
+                }
+            }
+        }
+        else
+        {
+            //region 1
+            float numer = (c+e) - (b+d);
+            if(numer <= 0)
+            {
+                s = 0;
+            }
+            else
+            {
+                float denom = a -2 * b+c;
+                if( numer >= denom)
+                {
+                    s =1;
+                }
+                else
+                {
+                    s = numer /denom;
+                }
+            }
+            t = 1 -s;
+        }
+    }
+    float distance_squared = (a * (s*s)) + (2 * b * s*t) + (c * (t*t)) + (2*d*s) + (2*e*t) + f;
+    return std::sqrt(distance_squared);
+    //return distance_squared;
+}
+
+void Models::addOBJModel(const std::string filepath)
+{
+    GridBox gridbox = makeGridBox(Vector(-2,-2,-2),Vector(2,2,2),Vector(0.01,0.01,0.01));
+    ScalarGrid modelgrid = makeGrid(gridbox, -10000000);
+
+    m = obj::loadModelFromFile(filepath);
+
+    std::vector<Triangle> triangles = ObjLoader::loadObj(filepath);
+    // std::vector<Triangle> triangles;
+    // for(auto it = m.faces.cbegin(); it != m.faces.cend(); ++it) //triangles
+    // {
+    //     for(int i = 0; i < it->second.size(); i+=3) //verts
+    //     {
+    //         int ind1 = it->second[i]; //vert index
+    //         int ind2 = it->second[i+1];
+    //         int ind3 = it->second[i+2];
+
+    //         Vector v1(m.vertex[ind1], m.vertex[ind1+1], m.vertex[ind1+2]); //m.vertex stores vertex in uniform order......
+    //         Vector v2(m.vertex[ind2], m.vertex[ind2+1], m.vertex[ind2+2]);
+    //         Vector v3(m.vertex[ind3], m.vertex[ind3+1], m.vertex[ind3+2]);
+    //         std::cout << ind1 << ' ' << ind2 << ' ' << ind3 << ' ' << v1.X() << ' ' << v1.Y() << ' ' << v1.Z() << '\n';
+    //         triangles.push_back(Triangle(v1, v2, v3));
+    //     }
+    //     //std::cout << triangles.size() << '\n';
+    // }    
+    std::cout << triangles.size() << '\n';
+    ProgressMeter pm(triangles.size(), "obj load");
+    #pragma omp parallel for
+    for(int a = 0; a < triangles.size(); a++)
+    {
+        int bandwith = 5;
+        int i,j,k;
+        modelgrid->getGridIndex(triangles[a].v1, i, j, k);
+        Vector v1_gridindex(i,j,k);
+        modelgrid->getGridIndex(triangles[a].v2, i, j, k);
+        Vector v2_gridindex(i,j,k);
+        modelgrid->getGridIndex(triangles[a].v3, i, j, k);
+        Vector v3_gridindex(i,j,k);
+//AABB
+        int lowx = std::min({v1_gridindex.X(), v2_gridindex.X(), v3_gridindex.X()}) -1;
+        int lowy = std::min({v1_gridindex.Y(), v2_gridindex.Y(), v3_gridindex.Y()}) -1 ;
+        int lowz = std::min({v1_gridindex.Z(), v2_gridindex.Z(), v3_gridindex.Z()}) -1 ;
+        modelgrid->fix_indices(lowx, lowy, lowz);
+
+        int maxx = std::max({v1_gridindex.X(), v2_gridindex.X(), v3_gridindex.X()}) +1;
+        int maxy = std::max({v1_gridindex.Y(), v2_gridindex.Y(), v3_gridindex.Y()}) +1;
+        int maxz = std::max({v1_gridindex.Z(), v2_gridindex.Z(), v3_gridindex.Z()}) +1;
+        modelgrid->fix_indices(maxx, maxy, maxz);
+//BANDWITH
+        lowx -= bandwith; lowy -= bandwith; lowz -= bandwith;
+        modelgrid->fix_indices(lowx, lowy, lowz);
+        maxx += bandwith; maxy += bandwith; maxz += bandwith;
+        modelgrid->fix_indices(maxx, maxy, maxz);
+        //std::cout << lowx << ' ' << lowy << ' ' << lowz << ' ' << maxx << ' ' << maxy << ' ' << maxz << '\n';
+        for(int j = lowy; j <= maxy; j++)
+        {
+            for(int i = lowx; i <= maxx; i++)
+            {
+                for(int k = lowz; k<= maxz; k++)
+                {
+                    Vector x_ijk = modelgrid->evalP(i, j, k);
+                    float distance = calcDistance(x_ijk, triangles[a]);
+                    if( distance <= std::abs(modelgrid->get(i,j,k)))
+                    {
+                        modelgrid->set(i, j, k, distance);
+                       // std::cout << i << ' ' << j << ' ' << k << ' ' << distance << '\n';
+                    }
+                }
+            }
+        }
+
+    }
+
+    for(int j = 0; j < modelgrid->ny(); j++)
+    {
+        for (int k = 0; k < modelgrid->nz(); k++)
+        {
+            Vector g_ijk = modelgrid->evalP(0, j, k); //start position of ray
+            Vector g_n = Vector(1,0,0); //direction of ray
+            std::vector<Vector> intersection_points;
+            for(int a = 0; a < triangles.size(); a++)
+            {
+                Vector t_n = (triangles[a].e2 ^ triangles[a].e1) / (triangles[a].e2 ^ triangles[a].e1).magnitude();
+                float d = ((t_n * (triangles[a].v1 - g_ijk)) / (t_n * g_n));
+                float u = ( (triangles[a].e2 ^ (g_ijk - triangles[a].v1 + (d*g_n))) * (triangles[a].e2 ^ triangles[a].e1) ) /
+                            ((triangles[a].e2 ^ triangles[a].e1).magnitude() * (triangles[a].e2 ^ triangles[a].e1).magnitude());
+                float v = ( -1 * (triangles[a].e1 ^ (g_ijk - triangles[a].v1 + (d*g_n))) * (triangles[a].e2 ^ triangles[a].e1) ) /
+                            ((triangles[a].e2 ^ triangles[a].e1).magnitude() * (triangles[a].e2 ^ triangles[a].e1).magnitude());
+                //find all intersections first
+                if(u >= 0 && u <= 1 && v >=0 && v <=1 && (u+v) <= 1 && (u+v) >= 0)
+                {
+                    //intersection at g_ijk + d * g_n
+                    //intersections++;
+                    intersection_points.push_back(g_ijk + d*g_n);
+                
+                }
+            }
+            // if(intersection_points.size() != 0)
+            //     std::cout << "sects points: " << intersection_points.size() << '\n';
+
+            int intersections = 0;
+            for(int i = 0; i < modelgrid->nx(); i++)
+            {
+                float grid_value = modelgrid->get(i, j, k);
+                Vector grid_point = modelgrid->evalP(i,j,k);
+   
+                for(int a = intersections; a < intersection_points.size(); a++) // see if grid point is past intersection
+                {
+                    // if(grid_point.X() >= intersection_points[a].X())
+                    // {
+                    //     intersections++;
+                    //     break;
+                    // }
+                    int i_x, i_y, i_z;
+                    modelgrid->getGridIndex(intersection_points[a], i_x, i_y, i_z);
+                    if(i >= i_x)
+                    {
+                        intersections++;
+                        break;
+                    }
+                }
+                if(intersections % 2 == 0)
+                {
+                    if(grid_value > 0) grid_value*=-1;
+                        modelgrid->set(i, j, k, grid_value);
+                }
+                else
+                {
+                    if(grid_value < 0) grid_value*=-1;
+                        modelgrid->set(i, j, k, grid_value);
+                }                
+            }
+            // if(intersections != 0)
+            //     std::cout << "sects : " << intersections << '\n';
+        
+        }
+ 
+    }
+
+    ScalarField model = gridded(modelgrid);
+    model = scale(model, Vector(6,6,6));
+    addScalarModel(model, Color(0.3,0.3,0.3,1));
+
 }
 
 void Models::addHumanoid()
@@ -69,18 +434,18 @@ void Models::addHumanoid()
 
 
     addScalarModel(e1, red);
-    addScalarModel(e2, green);
-    addScalarModel(e9, red);
-    addScalarModel(e4, green);
-    addScalarModel(e5, green);
-    addScalarModel(e6, green);
-    addScalarModel(e7, green);
-    addScalarModel(e8, green);
-    addScalarModel(e10, red);
-    addScalarModel(e13, pink);
-    addScalarModel(e14, white);
-    addScalarModel(e16, red);
-    addScalarModel(e17, pink);
+    //addScalarModel(e2, Color(0.1,0.1,0.1,1));
+    // addScalarModel(e9, red);
+    // addScalarModel(e4, green);
+    // addScalarModel(e5, green);
+    // addScalarModel(e6, green);
+    // addScalarModel(e7, green);
+    // addScalarModel(e8, green);
+    // addScalarModel(e10, red);
+    // addScalarModel(e13, pink);
+    // addScalarModel(e14, white);
+    // addScalarModel(e16, red);
+    // addScalarModel(e17, pink);
 
 
 

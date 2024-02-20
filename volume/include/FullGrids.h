@@ -46,8 +46,8 @@ class RectangularGrid
   
      const bool in_grid( int i, int j, int k ) const;
      const bool in_grid( const Vector& P ) const;
-
-  
+     void fix_indices(int& i, int& j, int& k) const;
+   
      const bool getBox( const Vector& lower, const Vector& upper, int& ixl, int& ixu, int& iyl, int& iyu, int& izl, int& izu ) const;
      const void getGridIndex( const Vector& P, int& ix, int& iy, int& iz ) const;
   
@@ -84,7 +84,12 @@ class FullGrid : public RectangularGrid
   public:
     FullGrid(){}
     FullGrid(T defValue){ default_value = defValue; }
-    ~FullGrid(){delete data;}
+    ~FullGrid()
+    {
+
+      if(data == NULL) return;
+      delete[] data;
+    }
 
     void init(const Vector&llc, const Vector& urc, const Vector& dims)
     {
@@ -93,9 +98,11 @@ class FullGrid : public RectangularGrid
       dX = dims.X();
       dY = dims.Y();
       dZ = dims.Z();
-      Nx = std::ceil(std::fabs(urc.X() - llc.X()) / dX);
-      Ny = std::ceil(std::fabs(urc.Y() - llc.Y()) / dY);
-      Nz = std::ceil(std::fabs(urc.Z() - llc.Z()) / dZ);
+      Nx = std::ceil(std::fabs(urc.X() - llc.X()) / dX)+1;
+      Ny = std::ceil(std::fabs(urc.Y() - llc.Y()) / dY)+1;
+      Nz = std::ceil(std::fabs(urc.Z() - llc.Z()) / dZ)+1;
+      //URC = LLC + Vector(Nx*dX, Ny*dY, Nz*dZ);
+      //RectangularGrid::init(LLC,URC,dims);
 
       data = new T[Nx*Ny*Nz];
 
@@ -134,20 +141,27 @@ class FullGrid : public RectangularGrid
       }   
     }
 
+
     const T eval( const Vector& P ) const
     {
       if(!in_grid(P)) return default_value;
       int i, j, k;
       getGridIndex(P, i, j, k);
+      float weightX = (1 -((P.X() - (i*dX+LLC.X()))/dX));
+      float weightXX = std::abs(((P.X() - (i*dX+LLC.X()))/dX)); //return 1 for grid cell outside of grid
+      float weightY = (1 -((P.Y() - (j*dY+LLC.Y()))/dY));
+      float weightYY = std::abs(((P.Y() - (j*dY+LLC.Y()))/dY)); //return 1 for grid cell outside of grid
+      float weightZ = (1 -((P.Z() - (k*dZ+LLC.Z()))/dZ));
+      float weightZZ = std::abs(((P.Z() - (k*dZ+LLC.Z()))/dZ)); //return 1 for grid cell outside of grid
       T accum = default_value * 0.0;
-      accum += get(i, j, k) * (1 - ((P.X()-i)/dX)) * (1 - ((P.Y()-j)/dY )) * (1 - ((P.Z()-k)/dZ));
-      accum += get(i+1, j, k) * (((P.X()-i)/dX)) * (1 - ((P.Y()-j)/dY )) * (1 - ((P.Z()-k)/dZ));
-      accum += get(i, j+1, k) * (1 - ((P.X()-i)/dX)) * (((P.Y()-j)/dY )) * (1 - ((P.Z()-k)/dZ));
-      accum += get(i, j, k+1) * (1 - ((P.X()-i)/dX)) * (1 - ((P.Y()-j)/dY )) * (((P.Z()-k)/dZ));
-      accum += get(i+1, j+1, k) * (((P.X()-i)/dX)) * (((P.Y()-j)/dY )) * (1 - ((P.Z()-k)/dZ));
-      accum += get(i+1, j, k+1) * (((P.X()-i)/dX)) * (1 - ((P.Y()-j)/dY )) * (((P.Z()-k)/dZ));
-      accum += get(i, j+1, k+1) * (1 - ((P.X()-i)/dX)) * (((P.Y()-j)/dY )) * (((P.Z()-k)/dZ));
-      accum += get(i+1, j+1, k+1) * (((P.X()-i)/dX)) * (((P.Y()-j)/dY )) * (((P.Z()-k)/dZ));
+      accum += get(i, j, k) *  weightX * weightY * weightZ;
+      accum += get(i+1, j, k) * weightXX * weightY * weightZ;
+      accum += get(i, j+1, k) * weightX * weightYY * weightZ;
+      accum += get(i, j, k+1) * weightX * weightY * weightZZ;
+      accum += get(i+1, j+1, k) * weightXX * weightYY * weightZ;
+      accum += get(i+1, j, k+1) * weightXX * weightY * weightZZ;
+      accum += get(i, j+1, k+1) * weightX * weightYY * weightZZ;
+      accum += get(i+1, j+1, k+1) * weightXX * weightYY * weightZZ;
 
       return accum;
     }

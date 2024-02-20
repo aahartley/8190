@@ -9,10 +9,10 @@ void RectangularGrid::init(const Vector&llc, const Vector& urc, const Vector& di
     dX = dims.X();
     dY = dims.Y();
     dZ = dims.Z();
-    Nx = std::ceil(std::fabs(urc.X() - llc.X()) / dX);
-    Ny = std::ceil(std::fabs(urc.Y() - llc.Y()) / dY);
-    Nz = std::ceil(std::fabs(urc.Z() - llc.Z()) / dZ);
-    URC = LLC + Vector(Nx*dX, Ny*dY, Nz*dZ);
+    Nx = std::ceil(std::fabs(urc.X() - llc.X()) / dX)+1;
+    Ny = std::ceil(std::fabs(urc.Y() - llc.Y()) / dY)+1;
+    Nz = std::ceil(std::fabs(urc.Z() - llc.Z()) / dZ)+1;
+    //URC = LLC + Vector(Nx*dX, Ny*dY, Nz*dZ);
 }
 const bool RectangularGrid::in_grid(const Vector& P) const
 {
@@ -44,9 +44,18 @@ const Vector RectangularGrid::evalP(int i, int j, int k) const
     return Vector(LLC.X()+(i*dX), LLC.Y()+(j*dY), LLC.Z()+(k*dZ));
 }
 
+void RectangularGrid::fix_indices(int& i, int& j, int& k) const
+{
+    if(i < 0) i= 0; if(i >= Nx) i = Nx-1;
+    if(j < 0) j= 0; if(j >= Ny) j = Ny-1;
+    if(k < 0) k= 0; if(k >= Nz) k = Nz-1;
+
+}
+
 GridBox::GridBox(RectangularGrid* f): std::shared_ptr<RectangularGrid>( f ) {}
 
 
 
 
 ScalarGrid::ScalarGrid(FullGrid<float>* fg) :  std::shared_ptr<FullGrid<float> >( fg ) {}
+ColorGrid::ColorGrid(FullGrid<Color>* fg) :  std::shared_ptr<FullGrid<Color> >( fg ) {}

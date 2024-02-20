@@ -73,7 +73,16 @@
         "FullGrid.C": "cpp",
         "FullGrids.C": "cpp",
         "Grids.C": "cpp",
-        "testt.C": "cpp"
+        "testt.C": "cpp",
+        "set": "cpp"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/aahartl/8190/volume/bin",
+            "binaryPath": "/home/aahartl/8190/volume/bin/volume",
+            "binaryArgs": []
+        }
+    ],
+    "cmake.configureOnOpen": true
 }

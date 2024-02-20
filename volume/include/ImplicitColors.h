@@ -6,6 +6,7 @@
 
 #include "Volume.h"
 #include "LinearAlgebra.h"
+#include "FullGrids.h"
 
 namespace lux
 {
@@ -123,7 +124,28 @@ class MultiplyColor : public Volume<Color>
 };
 
 
-
+class GriddedSGridColor : public Volume<Color> 
+ {
+   public:
+  
+     GriddedSGridColor( const ColorGrid& g );
+  
+     ~GriddedSGridColor(){}
+  
+     const Color eval( const Vector& P ) const;
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "Gridded";
+       return lbl;
+    }
+  
+   private:
+  
+     ColorGrid scgrid;
+     float dx, dy, dz;
+ };
+  
 
 
 

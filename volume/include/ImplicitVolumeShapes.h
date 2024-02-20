@@ -122,6 +122,37 @@ class AddVolume : public Volume<float>
     const ScalarField e1, e2;
 };
 
+class MultiplyVolume : public Volume<float> 
+{
+  public:
+
+    //MultiplyVolume( Volume<float> * v1, Volume<float> * v2 );
+
+    MultiplyVolume( const ScalarField&  v1, const ScalarField& v2 );
+
+    ~MultiplyVolume(){}
+
+
+    const float eval( const Vector& P ) const;
+
+   // const Vector grad(  const Vector& P ) const;
+
+   virtual std::string typelabel() 
+   { 
+      std::string lbl = "Mult";
+      lbl = lbl + "(";
+      lbl = lbl + e1->typelabel();
+      lbl = lbl + ",";
+      lbl = lbl + e2->typelabel();
+      lbl = lbl + ")";
+      return lbl;
+   }
+
+  private:
+
+    const ScalarField e1, e2;
+};
+
   
  class TranslateVolume : public Volume<float> 
  {

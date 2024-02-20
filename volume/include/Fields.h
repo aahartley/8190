@@ -60,7 +60,8 @@ ScalarField negate( const ScalarField& v );
 //ColorField  which( const ColorField& v1, const ColorField& v2, const ScalarField& swtch );
 //MatrixField which( const MatrixField& v1, const MatrixField& v2, const ScalarField& swtch );
 
-//ScalarField multiply( const ScalarField& v, const ScalarField& u ); 
+ScalarField multiply( const ScalarField& v, const ScalarField& u ); 
+//ScalarField multiply( const ScalarField& v, const float a ); 
 //VectorField multiply( const VectorField& v, const float a ); 
 //VectorField multiply( const VectorField& v, const ScalarField& u ); 
 //ColorField  multiply( const ColorField& v, const float a ); 
