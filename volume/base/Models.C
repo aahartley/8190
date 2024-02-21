@@ -246,48 +246,72 @@ float Models::calcDistance(Vector& x_ijk, Triangle& T)
         }
     }
     float distance_squared = (a * (s*s)) + (2 * b * s*t) + (c * (t*t)) + (2*d*s) + (2*e*t) + f;
-    return std::sqrt(distance_squared);
+    return std::sqrt(std::abs(distance_squared));
     //return distance_squared;
 }
 
-void Models::addOBJModel(const std::string filepath)
+void Models::addOBJModel(const std::string filepath, Vector dims, Vector scl)
 {
-    GridBox gridbox = makeGridBox(Vector(-2,-2,-2),Vector(2,2,2),Vector(0.01,0.01,0.01));
-    ScalarGrid modelgrid = makeGrid(gridbox, -10000000);
-
-    m = obj::loadModelFromFile(filepath);
-
+    //freopen("output.txt","w",stdout);
+    Vector sc = scl;
     std::vector<Triangle> triangles = ObjLoader::loadObj(filepath);
-    // std::vector<Triangle> triangles;
-    // for(auto it = m.faces.cbegin(); it != m.faces.cend(); ++it) //triangles
-    // {
-    //     for(int i = 0; i < it->second.size(); i+=3) //verts
-    //     {
-    //         int ind1 = it->second[i]; //vert index
-    //         int ind2 = it->second[i+1];
-    //         int ind3 = it->second[i+2];
+    int bandwith = 1;
+    float alx = triangles[0].v1.X(); float aly = triangles[0].v1.Y(); float alz = triangles[0].v1.Z();
+    float aux = triangles[0].v1.X(); float auy = triangles[0].v1.Y(); float auz = triangles[0].v1.Z();
+    #pragma omp parallel for
+    for(int a = 0; a < triangles.size(); a++)
+    {
+        Vector v1 = triangles[a].v1;
+        Vector v2 = triangles[a].v2;
+        Vector v3 = triangles[a].v3;
+        if(v1.X() < alx) alx= v1.X();         
+        if(v2.X() < alx) alx= v2.X();
+        if(v3.X() < alx) alx= v3.X();
+        if(v1.Y() < aly) aly= v1.Y();         
+        if(v2.Y() < aly) aly= v2.Y();
+        if(v3.Y() < aly) aly= v3.Y();
+        if(v1.Z() < alz) alz= v1.Z();         
+        if(v2.Z() < alz) alz= v2.Z();
+        if(v3.Z() < alz) alz= v3.Z();
 
-    //         Vector v1(m.vertex[ind1], m.vertex[ind1+1], m.vertex[ind1+2]); //m.vertex stores vertex in uniform order......
-    //         Vector v2(m.vertex[ind2], m.vertex[ind2+1], m.vertex[ind2+2]);
-    //         Vector v3(m.vertex[ind3], m.vertex[ind3+1], m.vertex[ind3+2]);
-    //         std::cout << ind1 << ' ' << ind2 << ' ' << ind3 << ' ' << v1.X() << ' ' << v1.Y() << ' ' << v1.Z() << '\n';
-    //         triangles.push_back(Triangle(v1, v2, v3));
-    //     }
-    //     //std::cout << triangles.size() << '\n';
-    // }    
+        if(v1.X() > aux) aux= v1.X();         
+        if(v2.X() > aux) aux= v2.X();
+        if(v3.X() > aux) aux= v3.X();
+        if(v1.Y() > auy) auy= v1.Y();         
+        if(v2.Y() > auy) auy= v2.Y();
+        if(v3.Y() > auy) auy= v3.Y();
+        if(v1.Z() > auz) auz= v1.Z();         
+        if(v2.Z() > auz) auz= v2.Z();
+        if(v3.Z() > auz) auz= v3.Z();
+        // std::cout << triangles[a].v1.X() << ' ' << triangles[a].v1.Y() << ' ' << triangles[a].v1.Z() << ' ' <<
+        // triangles[a].v2.X() << ' ' << triangles[a].v2.Y() << ' ' << triangles[a].v2.Z() << ' ' <<
+        // triangles[a].v3.X() << ' ' << triangles[a].v3.Y() << ' ' << triangles[a].v3.Z() << '\n';
+    }
+    alx = (alx < 0) ? std::floor(alx)-1-bandwith : std::ceil(alx)-1-bandwith;
+    aly = (aly < 0) ? std::floor(aly)-1-bandwith :std::ceil(aly)-1-bandwith;
+    alz = (alz < 0) ? std::floor(alz)-1-bandwith :std::ceil(alz)-1-bandwith;
+    aux = (aux < 0) ? std::floor(aux)+1+bandwith :std::ceil(aux)+1+bandwith;
+    auy = (auy < 0) ? std::floor(auy)+1+bandwith :std::ceil(auy)+1+bandwith;
+    auz = (auz < 0) ? std::floor(auz)+1+bandwith :std::ceil(auz)+1+bandwith;
+    std::cout << alx << ' ' << aly << ' '<< alz << ' ' << aux << ' ' << auy << ' ' << auz << '\n';
+
+    //GridBox gridbox = makeGridBox(Vector(alx,aly,alz),Vector(aux,auy,auz),dims);
+    GridBox gridbox = makeGridBox(Vector(-2,-2,-2),Vector(2,2,2),dims);
+
+    ScalarGrid modelgrid = makeGrid(gridbox, -10000000);
+    
     std::cout << triangles.size() << '\n';
     ProgressMeter pm(triangles.size(), "obj load");
     #pragma omp parallel for
     for(int a = 0; a < triangles.size(); a++)
     {
-        int bandwith = 5;
-        int i,j,k;
-        modelgrid->getGridIndex(triangles[a].v1, i, j, k);
-        Vector v1_gridindex(i,j,k);
-        modelgrid->getGridIndex(triangles[a].v2, i, j, k);
-        Vector v2_gridindex(i,j,k);
-        modelgrid->getGridIndex(triangles[a].v3, i, j, k);
-        Vector v3_gridindex(i,j,k);
+        int ii,jj,kk;
+        modelgrid->getGridIndex(triangles[a].v1, ii, jj, kk);
+        Vector v1_gridindex(ii,jj,kk);
+        modelgrid->getGridIndex(triangles[a].v2, ii, jj, kk);
+        Vector v2_gridindex(ii,jj,kk);
+        modelgrid->getGridIndex(triangles[a].v3, ii, jj, kk);
+        Vector v3_gridindex(ii,jj,kk);
 //AABB
         int lowx = std::min({v1_gridindex.X(), v2_gridindex.X(), v3_gridindex.X()}) -1;
         int lowy = std::min({v1_gridindex.Y(), v2_gridindex.Y(), v3_gridindex.Y()}) -1 ;
@@ -329,7 +353,7 @@ void Models::addOBJModel(const std::string filepath)
         {
             Vector g_ijk = modelgrid->evalP(0, j, k); //start position of ray
             Vector g_n = Vector(1,0,0); //direction of ray
-            std::vector<Vector> intersection_points;
+            std::vector<float> intersection_points;
             for(int a = 0; a < triangles.size(); a++)
             {
                 Vector t_n = (triangles[a].e2 ^ triangles[a].e1) / (triangles[a].e2 ^ triangles[a].e1).magnitude();
@@ -343,33 +367,32 @@ void Models::addOBJModel(const std::string filepath)
                 {
                     //intersection at g_ijk + d * g_n
                     //intersections++;
-                    intersection_points.push_back(g_ijk + d*g_n);
+                    intersection_points.push_back(d);
                 
                 }
             }
-            // if(intersection_points.size() != 0)
-            //     std::cout << "sects points: " << intersection_points.size() << '\n';
-
+            std::sort(intersection_points.begin(), intersection_points.end());
+            if(intersection_points.size() != 0 && intersection_points.size() % 2 != 0)
+                std::cout << intersection_points.size() << '\n';
             int intersections = 0;
             for(int i = 0; i < modelgrid->nx(); i++)
             {
-                float grid_value = modelgrid->get(i, j, k);
-                Vector grid_point = modelgrid->evalP(i,j,k);
-   
+                float grid_value = modelgrid->get(i, j, k);   
                 for(int a = intersections; a < intersection_points.size(); a++) // see if grid point is past intersection
                 {
-                    // if(grid_point.X() >= intersection_points[a].X())
-                    // {
-                    //     intersections++;
-                    //     break;
-                    // }
                     int i_x, i_y, i_z;
-                    modelgrid->getGridIndex(intersection_points[a], i_x, i_y, i_z);
-                    if(i >= i_x)
+                    Vector intersec_ijk = g_ijk + (intersection_points[a] * g_n);
+                    modelgrid->getGridIndex(intersec_ijk, i_x, i_y, i_z);
+                    if(i > i_x)
                     {
                         intersections++;
                         break;
                     }
+                    // if(g_ijk.X() >= intersec_ijk.X())
+                    // {
+                    //     intersections++;
+                    //     break;
+                    // }
                 }
                 if(intersections % 2 == 0)
                 {
@@ -382,16 +405,16 @@ void Models::addOBJModel(const std::string filepath)
                         modelgrid->set(i, j, k, grid_value);
                 }                
             }
-            // if(intersections != 0)
-            //     std::cout << "sects : " << intersections << '\n';
+            if(intersections != 0 && intersections % 2 != 0)
+                std::cout << "sects : " << intersections << '\n';
         
         }
  
     }
 
     ScalarField model = gridded(modelgrid);
-    model = scale(model, Vector(6,6,6));
-    addScalarModel(model, Color(0.3,0.3,0.3,1));
+    model = scale(model, sc);
+    addScalarModel(model, Color(0.5,0.5,0.5,1));
 
 }
 
@@ -433,7 +456,7 @@ void Models::addHumanoid()
     e17 = scale(e17, Vector(0.1,0.1,0.1));
 
 
-    addScalarModel(e1, red);
+    //addScalarModel(e1, red);
     //addScalarModel(e2, Color(0.1,0.1,0.1,1));
     // addScalarModel(e9, red);
     // addScalarModel(e4, green);

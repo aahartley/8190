@@ -45,8 +45,28 @@ public:
                 vertex.set(x,y,z);
                 vertices.push_back(vertex);
             } else if (token == "f") {
+                std::string v1s, v2s, v3s;
                 int v1Index, v2Index, v3Index;
-                iss >> v1Index  >> v2Index  >> v3Index;
+                iss >> v1s  >> v2s  >> v3s;
+                size_t pos1 = v1s.find('/'); // Find the position of the first '/'
+                size_t pos2 = v2s.find('/'); // Find the position of the first '/'
+                size_t pos3 = v3s.find('/'); // Find the position of the first '/'
+                if (pos1 != std::string::npos)
+                { // Check if the '/' is found
+                    std::string num = v1s.substr(0, pos1); // Extract from start to the position of '/'
+                    v1Index = std::stoi(num);
+                    num = v2s.substr(0, pos2); // Extract from start to the position of '/'
+                    v2Index = std::stoi(num);        
+                    num = v3s.substr(0, pos3); // Extract from start to the position of '/'
+                    v3Index = std::stoi(num);
+                }
+                else
+                {
+                    v1Index = std::stoi(v1s);
+                    v2Index = std::stoi(v2s);
+                    v3Index = std::stoi(v3s);
+
+                }
                 Vector v1 = vertices[v1Index - 1];
                 Vector v2 = vertices[v2Index - 1];
                 Vector v3 = vertices[v3Index - 1];

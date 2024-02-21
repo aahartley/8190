@@ -7,8 +7,8 @@
 
 #include "FullGrids.h"
 #include "Grids.h"
-#include "objload.h" //https://github.com/GerhardR/objload
 #include <iostream>
+#include <cstdio>
 #include <algorithm>
 #include "objloader.h"
 
@@ -36,7 +36,7 @@ class Models
 
     void addScalarModel(ScalarField& model, Color color);
     void addHumanoid();
-    void addOBJModel(std::string filepath);
+    void addOBJModel(std::string filepath, Vector dims, Vector scale);
 
     void setGridBox(GridBox& gB ){gb = gB;}
 
@@ -58,7 +58,6 @@ class Models
     ColorField colorfield;
     ScalarField density;
     GridBox gb = nullptr;
-    obj::Model m;
 };
 
 

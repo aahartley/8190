@@ -88,11 +88,13 @@ void VolumeRenderer::generate_frames()
 {
     GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.1,0.1,0.1));
     models->setGridBox(gb);
-    ScalarField density = models->getGriddedClampedDensityField(0.0,1.0);
+    // ScalarField density = models->getGriddedClampedDensityField(0.0,1.0);
+    // ColorField colorfield =  models->getGriddedColorField();
+    ScalarField density = models->getClampedDensityField(0.0,1.0);
     ColorField colorfield =  models->getGriddedColorField();
 
-    lightColor = std::vector<Color>{ Color(1,1,1,1), Color(0.2,0.2,0.2,1), Color(0.4,0.4,0.4,1)}; //key, rim, fill
-    lightPos = std::vector<Vector>{ Vector(0,10,0), Vector(0,0-10,0), Vector(0,0,-10)};
+    lightColor = std::vector<Color>{ Color(0.7,0.0,0.0,1), Color(0.,0.14,0.,1), Color(0.,0.,0.28,1)}; //key, rim, fill
+    lightPos = std::vector<Vector>{ Vector(0,10,0), Vector(0,-10,0), Vector(0,0,-10)};
 
     ScalarField TL, TL2, TL3;
     addDSM(TL, density, 0.03, 1, 0);
@@ -123,6 +125,7 @@ void VolumeRenderer::generate_frames()
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         imgProc->write_image("test"+std::to_string(i), 'o');
+        imgProc->write_image("test"+std::to_string(i), 'j');
 
         pm.update();
 
