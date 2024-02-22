@@ -34,9 +34,12 @@ class Models
     Models(){scalar_volumes_unioned = constant(-1000);  colorfield = constant(Color(0,0,0,0)); gb = makeGridBox(Vector(0,0,0),Vector(0,0,0),Vector(0,0,0));}
     ~Models(){}
 
-    void addScalarModel(ScalarField& model, Color color);
-    void addHumanoid();
-    void addOBJModel(std::string filepath, Vector dims, Vector scale);
+    void createColorField(ScalarField& model, Color color);
+    void createFinalUnion(ScalarField& model);
+    ScalarField addHumanoid();
+    ScalarField addOBJModel(std::string filepath, Vector llc, Vector urc, Vector dims);
+
+    void scene2();
 
     void setGridBox(GridBox& gB ){gb = gB;}
 
@@ -52,7 +55,7 @@ class Models
     ScalarField getGriddedClampedDensityField(float min, float max) ;
 
     ColorField getGriddedColorField();
-    ScalarField getGriddedVolumesUnioned();
+
   private:
     ScalarField scalar_volumes_unioned;
     ColorField colorfield;

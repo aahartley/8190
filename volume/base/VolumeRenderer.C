@@ -11,7 +11,7 @@ VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
 
 void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double ds, double kappa, int index)
 {
-    GridBox gb = makeGridBox(Vector(-15,-15,-15),Vector(15,15,15),Vector(0.05,0.05,0.05));
+    GridBox gb = makeGridBox(Vector(-10,-10,-10),Vector(10,10,10),Vector(0.05,0.05,0.05));
     ScalarGrid lgrid = makeGrid(gb, 0.f);
 
     ProgressMeter pm(1,"dsm"+std::to_string(index));
@@ -86,15 +86,14 @@ void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds,
 
 void VolumeRenderer::generate_frames()
 {
-    GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.1,0.1,0.1));
-    models->setGridBox(gb);
+  
     // ScalarField density = models->getGriddedClampedDensityField(0.0,1.0);
     // ColorField colorfield =  models->getGriddedColorField();
     ScalarField density = models->getClampedDensityField(0.0,1.0);
-    ColorField colorfield =  models->getGriddedColorField();
+    ColorField colorfield =  models->getColorField();
 
-    lightColor = std::vector<Color>{ Color(0.7,0.0,0.0,1), Color(0.,0.14,0.,1), Color(0.,0.,0.28,1)}; //key, rim, fill
-    lightPos = std::vector<Vector>{ Vector(0,10,0), Vector(0,-10,0), Vector(0,0,-10)};
+    lightColor = std::vector<Color>{ Color(0.7,0.7,0.7,1), Color(0.14,0.14,0.14,1), Color(0.28,0.28,0.28,1)}; //key, rim, fill
+    lightPos = std::vector<Vector>{ Vector(0,9.9,0), Vector(0,-9.9,0), Vector(0,0,-9.9)};
 
     ScalarField TL, TL2, TL3;
     addDSM(TL, density, 0.03, 1, 0);
@@ -121,7 +120,7 @@ void VolumeRenderer::generate_frames()
             eye = Vector(0,0,cam_distance); view = Vector(0,0,-1);
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 0.03, 1, density, colorfield );//fix
+        raymarch(1, 20, 0, 0.001, 1, density, colorfield );//fix
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         imgProc->write_image("test"+std::to_string(i), 'o');

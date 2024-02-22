@@ -31,9 +31,9 @@ int main(int argc, char** argv)
     }
     else
     {
-        models->addHumanoid();
-        models->addOBJModel("models/bunny/bunny.obj", Vector(0.001,0.001,0.001), Vector(30,30,30));
-        //models->addOBJModel("models/ajax/smallajax.obj", Vector(0.1, 0.1 ,0.1), Vector(0.3,0.3,0.3));
+        GridBox gb = makeGridBox(Vector(-1,-1,-1),Vector(1,1,1),Vector(0.01,0.01,0.01));
+        models->setGridBox(gb);
+        models->scene2();
 
         renderer->addModels(models);
         renderer->addImgProc(imgProc);

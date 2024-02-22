@@ -2,11 +2,17 @@
 
 using namespace lux;
 
-void Models::addScalarModel(ScalarField& model, Color color)
+void Models::createColorField(ScalarField& model, Color color)
 {
-    scalar_volumes_unioned = Union(scalar_volumes_unioned, model);
+    //scalar_volumes_unioned = Union(scalar_volumes_unioned, model);
 
     colorfield = colorfield *mask(-model) + constant(color)*mask(model); 
+
+}
+
+void Models::createFinalUnion(ScalarField& model)
+{
+    scalar_volumes_unioned = Union(scalar_volumes_unioned, model);
 
 }
 
@@ -37,7 +43,7 @@ ScalarField Models::getGriddedMaskedDensityField()
 ScalarField Models::getGriddedClampedDensityField(float min, float max) 
 {
     ScalarGrid dgrid = makeGrid(gb, 0.f);
-    density = clamp(getGriddedVolumesUnioned(), min, max);
+    density = clamp(scalar_volumes_unioned, min, max);
     stamp(dgrid, density, 1);
     return gridded(dgrid);
 }
@@ -50,12 +56,6 @@ ColorField Models::getGriddedColorField()
     return gridded(cgrid);
 }
 
-ScalarField Models::getGriddedVolumesUnioned()
-{
-    ScalarGrid mgrid = makeGrid(gb, -10000.f);
-    stamp(mgrid,scalar_volumes_unioned , 1);
-    return gridded(mgrid);
-}
 
 float Models::calcDistance(Vector& x_ijk, Triangle& T)
 {
@@ -250,15 +250,15 @@ float Models::calcDistance(Vector& x_ijk, Triangle& T)
     //return distance_squared;
 }
 
-void Models::addOBJModel(const std::string filepath, Vector dims, Vector scl)
+ScalarField Models::addOBJModel(const std::string filepath,Vector llc, Vector urc, Vector dims)
 {
     //freopen("output.txt","w",stdout);
-    Vector sc = scl;
+
     std::vector<Triangle> triangles = ObjLoader::loadObj(filepath);
-    int bandwith = 1;
+    int bandwith = 2;
     float alx = triangles[0].v1.X(); float aly = triangles[0].v1.Y(); float alz = triangles[0].v1.Z();
     float aux = triangles[0].v1.X(); float auy = triangles[0].v1.Y(); float auz = triangles[0].v1.Z();
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int a = 0; a < triangles.size(); a++)
     {
         Vector v1 = triangles[a].v1;
@@ -287,22 +287,23 @@ void Models::addOBJModel(const std::string filepath, Vector dims, Vector scl)
         // triangles[a].v2.X() << ' ' << triangles[a].v2.Y() << ' ' << triangles[a].v2.Z() << ' ' <<
         // triangles[a].v3.X() << ' ' << triangles[a].v3.Y() << ' ' << triangles[a].v3.Z() << '\n';
     }
-    alx = (alx < 0) ? std::floor(alx)-1-bandwith : std::ceil(alx)-1-bandwith;
-    aly = (aly < 0) ? std::floor(aly)-1-bandwith :std::ceil(aly)-1-bandwith;
-    alz = (alz < 0) ? std::floor(alz)-1-bandwith :std::ceil(alz)-1-bandwith;
-    aux = (aux < 0) ? std::floor(aux)+1+bandwith :std::ceil(aux)+1+bandwith;
-    auy = (auy < 0) ? std::floor(auy)+1+bandwith :std::ceil(auy)+1+bandwith;
-    auz = (auz < 0) ? std::floor(auz)+1+bandwith :std::ceil(auz)+1+bandwith;
+    // alx = (alx < 0) ? std::floor(alx)-1-bandwith : std::ceil(alx)-1-bandwith;
+    // aly = (aly < 0) ? std::floor(aly)-1-bandwith :std::ceil(aly)-1-bandwith;
+    // alz = (alz < 0) ? std::floor(alz)-1-bandwith :std::ceil(alz)-1-bandwith;
+    // aux = (aux < 0) ? std::floor(aux)+1+bandwith :std::ceil(aux)+1+bandwith;
+    // auy = (auy < 0) ? std::floor(auy)+1+bandwith :std::ceil(auy)+1+bandwith;
+    // auz = (auz < 0) ? std::floor(auz)+1+bandwith :std::ceil(auz)+1+bandwith;
     std::cout << alx << ' ' << aly << ' '<< alz << ' ' << aux << ' ' << auy << ' ' << auz << '\n';
-
+    //std::cout << dims.X() << ' ' << dims.Y() << ' ' << dims.Z() << '\n';
+    std::cout << ((urc.X() - llc.X())/dims.X()) << ' ' << ((urc.Y() - llc.Y())/dims.Y()) << ' '<< ((urc.Z() - llc.Z())/dims.Z()) << '\n';
     //GridBox gridbox = makeGridBox(Vector(alx,aly,alz),Vector(aux,auy,auz),dims);
-    GridBox gridbox = makeGridBox(Vector(-2,-2,-2),Vector(2,2,2),dims);
+    GridBox gridbox = makeGridBox(llc,urc,dims);
 
     ScalarGrid modelgrid = makeGrid(gridbox, -10000000);
     
     std::cout << triangles.size() << '\n';
     ProgressMeter pm(triangles.size(), "obj load");
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int a = 0; a < triangles.size(); a++)
     {
         int ii,jj,kk;
@@ -338,6 +339,7 @@ void Models::addOBJModel(const std::string filepath, Vector dims, Vector scl)
                     float distance = calcDistance(x_ijk, triangles[a]);
                     if( distance <= std::abs(modelgrid->get(i,j,k)))
                     {
+                        //#pragma omp critical
                         modelgrid->set(i, j, k, distance);
                        // std::cout << i << ' ' << j << ' ' << k << ' ' << distance << '\n';
                     }
@@ -372,59 +374,65 @@ void Models::addOBJModel(const std::string filepath, Vector dims, Vector scl)
                 }
             }
             std::sort(intersection_points.begin(), intersection_points.end());
-            if(intersection_points.size() != 0 && intersection_points.size() % 2 != 0)
-                std::cout << intersection_points.size() << '\n';
+            // if(intersection_points.size() != 0 && intersection_points.size() % 2 != 0)
+            //     std::cout << intersection_points.size() << '\n';
             int intersections = 0;
             for(int i = 0; i < modelgrid->nx(); i++)
             {
                 float grid_value = modelgrid->get(i, j, k);   
+                Vector grid_point = modelgrid->evalP(i,j,k);
                 for(int a = intersections; a < intersection_points.size(); a++) // see if grid point is past intersection
                 {
                     int i_x, i_y, i_z;
                     Vector intersec_ijk = g_ijk + (intersection_points[a] * g_n);
                     modelgrid->getGridIndex(intersec_ijk, i_x, i_y, i_z);
-                    if(i > i_x)
-                    {
-                        intersections++;
-                        break;
-                    }
-                    // if(g_ijk.X() >= intersec_ijk.X())
+                    // if(i > i_x)
                     // {
                     //     intersections++;
                     //     break;
                     // }
+                    if(grid_point.X() >= intersec_ijk.X())
+                    {
+                        intersections++;
+                        break;
+                    }
                 }
                 if(intersections % 2 == 0)
                 {
                     if(grid_value > 0) grid_value*=-1;
-                        modelgrid->set(i, j, k, grid_value);
+                    //#pragma omp critical
+                    modelgrid->set(i, j, k, grid_value);
                 }
                 else
                 {
                     if(grid_value < 0) grid_value*=-1;
-                        modelgrid->set(i, j, k, grid_value);
+                    //#pragma omp critical
+                    modelgrid->set(i, j, k, grid_value);
                 }                
             }
-            if(intersections != 0 && intersections % 2 != 0)
-                std::cout << "sects : " << intersections << '\n';
+            // if(intersections != 0 && intersections % 2 != 0)
+            //     std::cout << "sects : " << intersections << '\n';
         
         }
  
     }
 
     ScalarField model = gridded(modelgrid);
-    model = scale(model, sc);
-    addScalarModel(model, Color(0.5,0.5,0.5,1));
+    // model = translate(model, tsl);
+    // model = scale(model, sc);
+    //createColorField(model, Color(0.3,0.3,0.3,1));
+    return model;
+    //createFinalUnion(model);
 
 }
 
-void Models::addHumanoid()
+ScalarField Models::addHumanoid()
 {
 
     Color red( 1,0.2,0,1); Color green(0,1,0,1); Color black(0,0,0,1); Color blue(0,0,1,1); Color pink(1, 0.75, 0.8, 1); 
     Color white (1,1,1,1);
 
-    //ScalarField c = constant(-1000);
+    ScalarField c = constant(-1000);
     ScalarField e1 = Sphere(Vector(0,4,0), 2);
     ScalarField e2 = Sphere(Vector(0,2,0),2);
     ScalarField e3 = Sphere(Vector(0,4.7,0),2);
@@ -456,36 +464,39 @@ void Models::addHumanoid()
     e17 = scale(e17, Vector(0.1,0.1,0.1));
 
 
-    //addScalarModel(e1, red);
-    //addScalarModel(e2, Color(0.1,0.1,0.1,1));
-    // addScalarModel(e9, red);
-    // addScalarModel(e4, green);
-    // addScalarModel(e5, green);
-    // addScalarModel(e6, green);
-    // addScalarModel(e7, green);
-    // addScalarModel(e8, green);
-    // addScalarModel(e10, red);
-    // addScalarModel(e13, pink);
-    // addScalarModel(e14, white);
-    // addScalarModel(e16, red);
-    // addScalarModel(e17, pink);
+    createColorField(e1, red);
+    createColorField(e2, green);
+    // createColorField(e9, red);
+    // createColorField(e4, green);
+    // createColorField(e5, green);
+    // createColorField(e6, green);
+    createColorField(e7, green);
+    // createColorField(e8, green);
+    // createColorField(e10, red);
+    // createColorField(e13, pink);
+    // createColorField(e14, white);
+    // createColorField(e16, red);
+    // createColorField(e17, pink);
 
-
-
-    ////ScalarField u1 = Union(c, Union(e2,e9)); //head and eyes
-    // ScalarField u1 = e2;
-    // u1 = Union(u1, e9);
-    // u1 = Union(u1, e1); //horns
+    ScalarField u1 =  e2; //head 
+    //u1 = Union(u1, e9); //eyes
+    u1 = Union(u1, e1); //horns
     // u1 = Union(u1, e4); // torso
     // u1 = Union(u1, e5); // left foot
     // u1 = Union(u1, e6); // right foot
-    // u1 = Union(u1, e7); // left arm
+    u1 = Union(u1, e7); // left arm
     // u1 = Union(u1, e8); // right arm
     // u1 = Union(u1, e10); // mouth
     // u1 = Union(u1, e13); //tattoo
     // u1 = Union(u1, e14); //stein
     // u1 = Union(u1, e16); // hat
     // u1 = Union(u1, e17); // tattoo
+
+    ScalarGrid mgrid = makeGrid(gb, -10000.f);
+    stamp(mgrid,u1 , 1);
+    ScalarField gridsf = gridded(mgrid);
+    return gridsf;
+    //createFinalUnion(gridsf);
 
     // //ColorField e1Color = constant(Color(0,0,0,0)); //start with black
     // e1Color = e1Color *mask(-e1) + constant(red)*mask(e1); //horn color
@@ -509,4 +520,33 @@ void Models::addHumanoid()
 
     // densityfield = density;
     // colorfield = e1Color;
+}
+
+void Models::scene2()
+{
+    ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.08, 0.08 ,0.08));
+    // ScalarField cutter = Sphere(Vector(8,23,9), 25);
+    //cutter = scale(cutter, Vector(12.721, 31.483, 12.537));
+
+    //aj = Cutout(aj, cutter);
+
+    // createFinalUnion(cutter);
+    // createColorField(cutter, Color(0.,0,1,1));
+    //aj = translate(aj, Vector(-35,15,4));
+    aj = scale(aj, Vector(0.3,0.3,0.3));
+    createColorField(aj, Color(0.3,0.3,0.3,1));
+
+    // ScalarField hum = addHumanoid();
+
+    // //ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.001,0.001,0.001) );
+    // ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.00012,0.00012,0.00012));
+    // //bun = translate(bun, Vector(-0.15,0.05,0));
+    // bun = scale(bun, Vector(30,30,30));
+    // createColorField(bun, Color(0.3,0.3,0.3,1));
+
+
+
+    //createFinalUnion(hum);
+    //createFinalUnion(bun);
+    createFinalUnion(aj);   
 }
