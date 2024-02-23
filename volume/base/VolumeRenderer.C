@@ -87,12 +87,12 @@ void VolumeRenderer::raymarch(double snear, double sfar, double Tmin, double ds,
 void VolumeRenderer::generate_frames()
 {
   
-    // ScalarField density = models->getGriddedClampedDensityField(0.0,1.0);
-    // ColorField colorfield =  models->getGriddedColorField();
-    ScalarField density = models->getClampedDensityField(0.0,1.0);
-    ColorField colorfield =  models->getColorField();
+    ScalarField density = models->getGriddedClampedDensityField(0.0,1.0);
+    ColorField colorfield =  models->getGriddedColorField();
+    // ScalarField density = models->getClampedDensityField(0.0,0.1);
+    // ColorField colorfield =  models->getColorField();
 
-    lightColor = std::vector<Color>{ Color(0.7,0.7,0.7,1), Color(0.14,0.14,0.14,1), Color(0.28,0.28,0.28,1)}; //key, rim, fill
+    lightColor = std::vector<Color>{ Color(0.7,0.7,0.7,1), Color(0.15,0.15,0.15,1), Color(0.28,0.28,0.28,1)}; //key, rim, fill
     lightPos = std::vector<Vector>{ Vector(0,9.9,0), Vector(0,-9.9,0), Vector(0,0,-9.9)};
 
     ScalarField TL, TL2, TL3;
@@ -120,7 +120,7 @@ void VolumeRenderer::generate_frames()
             eye = Vector(0,0,cam_distance); view = Vector(0,0,-1);
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 0.001, 1, density, colorfield );//fix
+        raymarch(1, 20, 0, 0.005, 1, density, colorfield );//fix
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         imgProc->write_image("test"+std::to_string(i), 'o');

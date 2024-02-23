@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        GridBox gb = makeGridBox(Vector(-1,-1,-1),Vector(1,1,1),Vector(0.01,0.01,0.01));
+        GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.05,0.05,0.05));
         models->setGridBox(gb);
         models->scene2();
 

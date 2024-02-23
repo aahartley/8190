@@ -258,7 +258,6 @@ ScalarField Models::addOBJModel(const std::string filepath,Vector llc, Vector ur
     int bandwith = 2;
     float alx = triangles[0].v1.X(); float aly = triangles[0].v1.Y(); float alz = triangles[0].v1.Z();
     float aux = triangles[0].v1.X(); float auy = triangles[0].v1.Y(); float auz = triangles[0].v1.Z();
-    //#pragma omp parallel for
     for(int a = 0; a < triangles.size(); a++)
     {
         Vector v1 = triangles[a].v1;
@@ -295,7 +294,7 @@ ScalarField Models::addOBJModel(const std::string filepath,Vector llc, Vector ur
     // auz = (auz < 0) ? std::floor(auz)+1+bandwith :std::ceil(auz)+1+bandwith;
     std::cout << alx << ' ' << aly << ' '<< alz << ' ' << aux << ' ' << auy << ' ' << auz << '\n';
     //std::cout << dims.X() << ' ' << dims.Y() << ' ' << dims.Z() << '\n';
-    std::cout << ((urc.X() - llc.X())/dims.X()) << ' ' << ((urc.Y() - llc.Y())/dims.Y()) << ' '<< ((urc.Z() - llc.Z())/dims.Z()) << '\n';
+    std::cout << (std::abs(urc.X() - llc.X())/dims.X()) << ' ' << (std::abs(urc.Y() - llc.Y())/dims.Y()) << ' '<< (std::abs(urc.Z() - llc.Z())/dims.Z()) << '\n';
     //GridBox gridbox = makeGridBox(Vector(alx,aly,alz),Vector(aux,auy,auz),dims);
     GridBox gridbox = makeGridBox(llc,urc,dims);
 
@@ -303,7 +302,7 @@ ScalarField Models::addOBJModel(const std::string filepath,Vector llc, Vector ur
     
     std::cout << triangles.size() << '\n';
     ProgressMeter pm(triangles.size(), "obj load");
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int a = 0; a < triangles.size(); a++)
     {
         int ii,jj,kk;
@@ -466,33 +465,34 @@ ScalarField Models::addHumanoid()
 
     createColorField(e1, red);
     createColorField(e2, green);
-    // createColorField(e9, red);
-    // createColorField(e4, green);
-    // createColorField(e5, green);
-    // createColorField(e6, green);
+    createColorField(e9, red);
+    createColorField(e4, green);
+    createColorField(e5, green);
+    createColorField(e6, green);
     createColorField(e7, green);
-    // createColorField(e8, green);
-    // createColorField(e10, red);
-    // createColorField(e13, pink);
-    // createColorField(e14, white);
-    // createColorField(e16, red);
-    // createColorField(e17, pink);
+    createColorField(e8, green);
+    createColorField(e10, red);
+    createColorField(e13, pink);
+    createColorField(e14, white);
+    createColorField(e16, red);
+    createColorField(e17, pink);
 
     ScalarField u1 =  e2; //head 
-    //u1 = Union(u1, e9); //eyes
+    u1 = Union(u1, e9); //eyes
     u1 = Union(u1, e1); //horns
-    // u1 = Union(u1, e4); // torso
-    // u1 = Union(u1, e5); // left foot
-    // u1 = Union(u1, e6); // right foot
+    u1 = Union(u1, e4); // torso
+    u1 = Union(u1, e5); // left foot
+    u1 = Union(u1, e6); // right foot
     u1 = Union(u1, e7); // left arm
-    // u1 = Union(u1, e8); // right arm
-    // u1 = Union(u1, e10); // mouth
-    // u1 = Union(u1, e13); //tattoo
-    // u1 = Union(u1, e14); //stein
-    // u1 = Union(u1, e16); // hat
-    // u1 = Union(u1, e17); // tattoo
+    u1 = Union(u1, e8); // right arm
+    u1 = Union(u1, e10); // mouth
+    u1 = Union(u1, e13); //tattoo
+    u1 = Union(u1, e14); //stein
+    u1 = Union(u1, e16); // hat
+    u1 = Union(u1, e17); // tattoo
 
-    ScalarGrid mgrid = makeGrid(gb, -10000.f);
+    GridBox gridbox = makeGridBox(Vector(-5,-5,-5),Vector(5,5,5),Vector(0.1,0.1,0.1));
+    ScalarGrid mgrid = makeGrid(gridbox, -10000.f);
     stamp(mgrid,u1 , 1);
     ScalarField gridsf = gridded(mgrid);
     return gridsf;
@@ -524,29 +524,27 @@ ScalarField Models::addHumanoid()
 
 void Models::scene2()
 {
-    ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.08, 0.08 ,0.08));
-    // ScalarField cutter = Sphere(Vector(8,23,9), 25);
-    //cutter = scale(cutter, Vector(12.721, 31.483, 12.537));
-
-    //aj = Cutout(aj, cutter);
-
-    // createFinalUnion(cutter);
-    // createColorField(cutter, Color(0.,0,1,1));
-    //aj = translate(aj, Vector(-35,15,4));
-    aj = scale(aj, Vector(0.3,0.3,0.3));
+    ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.8, 0.8 ,0.8));
+    //ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.8, 0.8 ,0.8));
+    aj = scale(aj, Vector(0.1,0.1,0.1));
+    aj = translate(aj, Vector(-3.5,1.5,1));
     createColorField(aj, Color(0.3,0.3,0.3,1));
 
-    // ScalarField hum = addHumanoid();
+    ScalarField cutter = Sphere(Vector(-3,2.5,0), 1);
+    cutter = scale(cutter, Vector(1,1,1));
+    aj = Cutout(aj, cutter);
+    ScalarField hum = addHumanoid();
 
-    // //ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.001,0.001,0.001) );
-    // ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.00012,0.00012,0.00012));
-    // //bun = translate(bun, Vector(-0.15,0.05,0));
-    // bun = scale(bun, Vector(30,30,30));
-    // createColorField(bun, Color(0.3,0.3,0.3,1));
+    ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005) );
+    //ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.00012,0.00012,0.00012));
+    bun = scale(bun, Vector(10,10,10));
+    bun = translate(bun, Vector(-3.05,1.6,0.5));
+    createColorField(bun, Color(0.3,0.3,0.3,1));
 
 
 
-    //createFinalUnion(hum);
-    //createFinalUnion(bun);
+    createFinalUnion(hum);
+    createFinalUnion(bun);
     createFinalUnion(aj);   
+
 }
