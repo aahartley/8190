@@ -6,4 +6,5 @@ CSG operations, can convert geometry to level sets, noise wedges
 ## WIP
 Improve the grid data structure and have the ability to choose openVDB
 convert level sets to geometry
+## Sample image of hummanoid with obj models
 ![test0](https://github.com/aahartley/8190/assets/50050814/63f44668-a09d-4e32-9f89-abd53c4c902d)
