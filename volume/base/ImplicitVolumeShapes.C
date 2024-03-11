@@ -380,3 +380,26 @@ const float GriddedSGridVolume::eval(const Vector& P) const
 {
    return scgrid->eval(P);
 }
+
+NoiseVolume::NoiseVolume(const _Noise& n) :noise(n)
+{ }
+
+const float NoiseVolume::eval(const Vector& P) const
+{
+   return noise->eval(P);
+}
+
+PyroclasticSphere::PyroclasticSphere(const Vector& cen, const float r, const float amp, const float gam, const _Noise& n ) :
+  center(cen),
+  rad(r),
+  amplitude(amp),
+  gamma(gam),
+  noise(n)
+{ }
+
+const float PyroclasticSphere::eval(const Vector& P) const
+{
+   Vector x_closest = rad * (( P - center) / (P- center).magnitude());
+   float f_x = rad - (P-center).magnitude();
+   return f_x + amplitude * std::pow(std::abs(noise->eval(x_closest)),gamma);
+}

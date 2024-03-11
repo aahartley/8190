@@ -35,6 +35,7 @@ class VolumeRenderer
     std::shared_ptr<img::ImgProc> imgProc;
     std::shared_ptr<Camera> camera;
     bool rotate_table;
+    bool wedge;
 
 };
 

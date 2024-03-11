@@ -77,4 +77,49 @@ void stamp( ColorGrid& grid, const ColorField& field, const int nbsamples )
     }
 }
 
+void stampNoise( ScalarGrid& grid, const _Noise& noise)
+{
+    ProgressMeter pm(1, "grid_noise");
+    #pragma omp parallel for collapse(3)
+    for(int j = 0; j < grid->ny(); j++)
+    {
+        for(int i = 0; i < grid->nx(); i++)
+        {
+            for(int k = 0; k < grid->nz(); k++)
+            {
+                grid->set(i, j, k, std::max(noise->eval(grid->evalP(i,j,k)),grid->get(i, j , k)));
+     
+            }
+        }
+    }
+}
+
+void stampWisp( ScalarGrid& grid, const Vector& P_4, const float den)
+{
+    //ProgressMeter pm(1, "grid_wisp");
+    int ix,iy,iz;
+    grid->getGridIndex(P_4, ix, iy, iz);
+
+    for(int i = ix; i <= ix+1; i++)
+    {
+        for(int j = iy; j <= iy+1; j++)
+        {
+            for(int k = iz; k <= iz+1; k++)
+            {
+                if(grid->in_grid(i,j,k))
+                {
+                    Vector gp=grid->evalP(i,j,k);
+                    float weight = ( 1 - ((Vector(1,0,0) * (gp - P_4))/grid->dx()) ) * ( 1 - ((Vector(0,1,0) * (gp - P_4))/grid->dy()) ) *
+                                ( 1 - ((Vector(0,0,1) * (gp - P_4))/grid->dz()) );
+                    grid->set(i, j , k, grid->get(i,j,k) + den * weight);
+                }
+
+            }
+        }
+    }
+
+
+
+}
+
 }

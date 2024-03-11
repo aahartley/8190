@@ -11,6 +11,9 @@
 #include <cstdio>
 #include <algorithm>
 #include "objloader.h"
+#include "Noise.h"
+#include <random>
+#include "Random.h"
 
 namespace lux
 {
@@ -39,9 +42,17 @@ class Models
     ScalarField addHumanoid();
     ScalarField addOBJModel(std::string filepath, Vector llc, Vector urc, Vector dims);
 
+    void reset() { scalar_volumes_unioned = constant(-1000);  colorfield = constant(Color(0,0,0,0));}
+
     void scene2();
+    void addPyroSphere(int iter);
+    void addRandPyroSphere();
+    void addIFNoise();
+    void addRandIFNoise();
+    void addWisp(int guides);
 
     void setGridBox(GridBox& gB ){gb = gB;}
+    void setRandom(std::shared_ptr<Random>& r) {random = r;}
 
     float calcDistance(Vector& x_ijk, Triangle& t);
 
@@ -61,6 +72,8 @@ class Models
     ColorField colorfield;
     ScalarField density;
     GridBox gb = nullptr;
+    std::shared_ptr<Random> random = nullptr;
+    NoiseData noise_param;
 };
 
 

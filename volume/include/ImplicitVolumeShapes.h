@@ -8,7 +8,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
-
+#include "Noise.h"
 
 
 namespace lux
@@ -576,10 +576,55 @@ class SteinerPatchVolume : public Volume<float>
      float dx, dy, dz;
  };
   
+ class NoiseVolume : public Volume<float> 
+ {
+   public:
+  
+     //NoiseVolume( Noise* n, const float d = 0.01 ); 
+     NoiseVolume(const _Noise& n); 
+  
+    ~NoiseVolume(){}
+  
+     const float eval( const Vector& P ) const; 
+     //const Vector grad(  const Vector& P ) const;  
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "Noise";
+       return lbl;
+    }
+  
+   private:
+  
+     _Noise noise;
+ };
 
 
-
-
+ class PyroclasticSphere : public Volume<float> 
+ {
+   public:
+  
+     //NoiseVolume( Noise* n, const float d = 0.01 ); 
+     PyroclasticSphere(const Vector& cen, const float r, const float amp, const float gam, const _Noise& n ); 
+  
+    ~PyroclasticSphere(){}
+  
+     const float eval( const Vector& P ) const; 
+     //const Vector grad(  const Vector& P ) const;  
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "PyroclasticSphere";
+       return lbl;
+    }
+  
+   private:
+      Vector center;
+      float rad;
+      float amplitude;
+      float gamma;
+     _Noise noise;
+ };
 
 
 }

@@ -60,6 +60,8 @@ ScalarField Torus( const Vector& cen, const float radMaj, const float radMin, co
 ScalarField SteinerPatch( const Vector& cen) { return ScalarField( new SteinerPatchVolume(cen) ); } 
 ScalarField Icosahedron( ) { return ScalarField( new IcosahedronVolume() ); }
 ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius) { return ScalarField( new CylinderVolume(cen, norm, radius) ); }
+ScalarField SFNoise(const _Noise& noise){ return ScalarField( new NoiseVolume(noise));}
+ScalarField PyroSphere(const Vector& cen, const float rad, const float amp, const float gam, const _Noise& noise){ return ScalarField( new PyroclasticSphere(cen, rad, amp, gam,noise));}
 
 
 ScalarField Union( const ScalarField& v1, const ScalarField& v2 ) { return ScalarField( new UnionVolume(v1, v2)) ;}

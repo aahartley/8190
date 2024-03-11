@@ -5,6 +5,7 @@
 #include "VolumeRenderer.h"
 #include "ImgProc.h"
 #include "Camera.h"
+#include "Random.h"
 
 using namespace lux;
 
@@ -15,10 +16,11 @@ int main(int argc, char** argv)
 {
 
     VolumeRenderer* renderer = nullptr;
+    std::shared_ptr<Random> random (  new Random(1));
     std::shared_ptr<img::ImgProc> imgProc (new img::ImgProc());
     std::shared_ptr<Camera> camera ( new Camera());
     std::shared_ptr<Models> models(new Models());
-    imgProc->clear(1920, 1080, 4);
+    imgProc->clear(960, 540, 4);
     std::vector<std::string> args;
     for(int i = 0; i < argc; i++)
     {
@@ -31,9 +33,15 @@ int main(int argc, char** argv)
     }
     else
     {
-        GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.05,0.05,0.05));
+        random->populateRand();
+        //GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.05,0.05,0.05));
+        GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.012,0.012,0.012)); //0.01
+
         models->setGridBox(gb);
-        models->scene2();
+        models->setRandom(random);
+        //models->scene2();
+        //models->addPyroSphere();
+        //models->addIFNoise();
 
         renderer->addModels(models);
         renderer->addImgProc(imgProc);

@@ -3,7 +3,7 @@
 #define __FIELDS_H__
 
 #include "Volume.h"
-
+#include "Noise.h"
 
 namespace lux
 {
@@ -101,6 +101,8 @@ ScalarField Icosahedron( ) ;
 ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius) ; // no center?
 //ScalarField CappedCylinder( const Vector cen, const Vector axis, const float length, const float radius );
 //ScalarField Shell( const ScalarField& v, const float thickness );
+ScalarField SFNoise( const _Noise& noise );
+ScalarField PyroSphere(const Vector& cen, const float rad, const float amp, const float gam, const _Noise& noise );
 
 ScalarField mask( const ScalarField& v );
 ScalarField clamp( const ScalarField& v, float minv, float maxv );
