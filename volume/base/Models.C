@@ -681,7 +681,7 @@ void Models::addRandPyroSphere()
     std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
     _Noise noise = fs;
     noise->setParameters(noiseparams);
-    std::cout << noiseparams.octaves << ' ' << noiseparams.fjump << ' ' << noiseparams.frequency << ' ' <<noiseparams.roughness << ' ' << gamma <<'\n';
+    std::cout << noiseparams.octaves << ' ' << noiseparams.fjump << ' ' << noiseparams.frequency << ' ' <<noiseparams.roughness << ' ' << noise.gamma <<'\n';
 
     ScalarField ps = PyroSphere(Vector(0,0,0), 3, 1.5,noiseparams.gamma, noise);
 
