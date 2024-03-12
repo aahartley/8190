@@ -599,7 +599,7 @@ void Models::accumulateNoiseParam(NoiseData& data, const int iter, const std::st
     //accumulate
     else
     {
-        data.fjump = 0.1 + (iter-1)*0.004;
+        data.fjump = 0.1 + (iter-1)*0.01;
         data.frequency = 0.1 + (iter-1)*0.004;
         data.roughness = 0.1 + (iter-1)*0.004;
         data.octaves = 1 + (iter-1)*0.004;
@@ -671,19 +671,19 @@ void Models::addIFNoise(NoiseData& noiseparams)
 void Models::addRandPyroSphere()
 {
     NoiseData noiseparams{};
-    noiseparams.octaves = random->randUniform(1,10);
-    noiseparams.fjump = random->randUniform(0.1, 10);
-    noiseparams.frequency = random->randUniform(0.1, 10);
-    noiseparams.roughness = random->randUniform(0.1, 10);
+    noiseparams.octaves = random->randUniform(1,4);
+    noiseparams.fjump = random->randUniform(0.6, 5);
+    noiseparams.frequency = random->randUniform(0.5, 4);
+    noiseparams.roughness = random->randUniform(0.3, 5);
+    noiseparams.gamma = random->randUniform(0.3, 2);
     std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
     NoiseSrc ns = pn;
     std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
     _Noise noise = fs;
     noise->setParameters(noiseparams);
-    float gamma = random->randUniform(0.1,5);
     std::cout << noiseparams.octaves << ' ' << noiseparams.fjump << ' ' << noiseparams.frequency << ' ' <<noiseparams.roughness << ' ' << gamma <<'\n';
 
-    ScalarField ps = PyroSphere(Vector(0,0,0), 3, 1.5,gamma, noise);
+    ScalarField ps = PyroSphere(Vector(0,0,0), 3, 1.5,noiseparams.gamma, noise);
 
     createColorField(ps, Color(0.3,0.3,0.3,1));
     createFinalUnion(ps);
