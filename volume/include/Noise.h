@@ -142,6 +142,7 @@ class FractalSum : public Noise
       octaves (3.f),
       roughness (0.5f),
       fjump(2.f),
+      gamma(0.8),
       translate (Vector(0,0,0))
     {} 
 
@@ -165,6 +166,7 @@ class FractalSum : public Noise
         roughness = parameters.roughness;
         frequency = parameters.frequency; 
         translate = parameters.translate; 
+        gamma = parameters.gamma;
   
     }
   
@@ -176,6 +178,7 @@ class FractalSum : public Noise
         parameters.roughness = roughness;
         parameters.frequency = frequency; 
         parameters.translate = translate; 
+        parameters.gamma = gamma;
 
     }
 
@@ -185,6 +188,7 @@ class FractalSum : public Noise
     float octaves;
     float roughness;
     float fjump;
+    float gamma;
     Vector translate; 
 };
 
