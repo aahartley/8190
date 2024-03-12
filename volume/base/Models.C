@@ -599,11 +599,11 @@ void Models::accumulateNoiseParam(NoiseData& data, const int iter, const std::st
     //accumulate
     else
     {
-        data.fjump = 0.1 + (iter-1)*0.1;
-        data.frequency = 0.1 + (iter-1)*0.1;
-        data.roughness = 0.1 + (iter-1)*0.1;
-        data.octaves = 1 + (iter-1)*0.1;
-        data.gamma = 0.1 + (iter-1)*0.1;
+        data.fjump = 0.1 + (iter-1)*0.01;
+        data.frequency = 0.1 + (iter-1)*0.01;
+        data.roughness = 0.1 + (iter-1)*0.01;
+        data.octaves = 1 + (iter-1)*0.01;
+        data.gamma = 0.1 + (iter-1)*0.01;
         data.clump = 0.1 + (iter-1)*0.01;
 
     }
