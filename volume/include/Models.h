@@ -45,11 +45,13 @@ class Models
     void reset() { scalar_volumes_unioned = constant(-1000);  colorfield = constant(Color(0,0,0,0));}
 
     void scene2();
-    void addPyroSphere(int iter);
+    void addPyroSphere(NoiseData& param);
     void addRandPyroSphere();
-    void addIFNoise();
+    void addIFNoise(NoiseData& param);
     void addRandIFNoise();
-    void addWisp(int guides);
+    void addWisp(NoiseData& param1, NoiseData& param2);
+
+    void accumulateNoiseParam(NoiseData& param, const int iter, const std::string& type);
 
     void setGridBox(GridBox& gB ){gb = gB;}
     void setRandom(std::shared_ptr<Random>& r) {random = r;}
@@ -73,7 +75,6 @@ class Models
     ScalarField density;
     GridBox gb = nullptr;
     std::shared_ptr<Random> random = nullptr;
-    NoiseData noise_param;
 };
 
 

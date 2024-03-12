@@ -9,6 +9,8 @@
 //#include "Fields.h"
 #include "ProgressMeter.h"
 #include "ImgProc.h"
+#include <iomanip>
+#include <sstream>
 
 namespace lux{
 

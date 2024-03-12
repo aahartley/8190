@@ -79,7 +79,7 @@ void stamp( ColorGrid& grid, const ColorField& field, const int nbsamples )
 
 void stampNoise( ScalarGrid& grid, const _Noise& noise)
 {
-    ProgressMeter pm(1, "grid_noise");
+    //ProgressMeter pm(1, "grid_noise");
     #pragma omp parallel for collapse(3)
     for(int j = 0; j < grid->ny(); j++)
     {

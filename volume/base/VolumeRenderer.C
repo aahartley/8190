@@ -105,7 +105,8 @@ void VolumeRenderer::generate_frames()
         dsmField = std::vector<ScalarField>{TL, TL2, TL3};
     }
 
-
+    NoiseData nd1;
+    NoiseData nd2;
     ProgressMeter pm (end-start,"demo");
     for(int i = start; i < end; i++)
     {
@@ -125,9 +126,11 @@ void VolumeRenderer::generate_frames()
         }
         if(wedge)
         {
-            //models->addRandPyroSphere();
-            //models->addPyroSphere(i);
-            models->addWisp(1);
+            models->accumulateNoiseParam(nd1, i, "pyro");
+            models->accumulateNoiseParam(nd2, i, "wisp2");
+            models->addPyroSphere(nd1);
+            //models->addIFNoise(nd1);
+            //models->addWisp(nd1, nd2);
             density = models->getGriddedClampedDensityField(0.0,1.0);
             colorfield =  models->getGriddedColorField();
 
@@ -140,8 +143,12 @@ void VolumeRenderer::generate_frames()
         raymarch(1, 20, 0, 0.005, 1, density, colorfield );//fix
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
-        imgProc->write_image("test"+std::to_string(i), 'o');
-        imgProc->write_image("test"+std::to_string(i), 'j');
+        std::string img_num = std::to_string(i);
+        std::stringstream ss;
+        ss << std::setw(4) << std::setfill('0') << img_num;
+        img_num = ss.str();    
+        imgProc->write_image("test."+img_num, 'o');
+        imgProc->write_image("test."+img_num, 'j');
 
         if(wedge) models->reset();
         pm.update();

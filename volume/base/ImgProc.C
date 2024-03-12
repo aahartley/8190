@@ -124,13 +124,14 @@ void ImgProc::write_image(std::string fileName, char f) const
 	float* pixels = nullptr;
 
 	std::string nfileName;
-	std::size_t pos = fileName.find(".");
-    std::string fn = fileName.substr(0, pos);
-	time_t now = time(0);
-  	std::string date = ctime(&now);
-	std::replace(date.begin(), date.end(), ':', '_');
-	std::replace(date.begin(), date.end(), ' ', '_');
-	date.pop_back(); //remove weird character at the end
+	// std::size_t pos = fileName.find(".");
+    // std::string fn = fileName.substr(0, pos);
+	// time_t now = time(0);
+  	// std::string date = ctime(&now);
+	// std::replace(date.begin(), date.end(), ':', '_');
+	// std::replace(date.begin(), date.end(), ' ', '_');
+	// date.pop_back(); //remove weird character at the end
+	std::string fn = fileName;
 
 	if(f =='j') ///jpg
 	{

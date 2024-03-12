@@ -94,8 +94,12 @@ struct NoiseData
       fjump(2.0f),
       fade(1),
       fade_radius(1),
+      clump(1),
+      gamma(1),
+    
       fade_x0(Vector(0,0,0)),
-      translate (Vector(0,0,0))
+      translate (Vector(0,0,0)),
+      dP(Vector(0,0,0))
     {} 
 
     float frequency;
@@ -104,8 +108,12 @@ struct NoiseData
     float fjump;
     float fade;
     float fade_radius;
+    float clump;
+    float gamma;
     Vector fade_x0;
     Vector translate; 
+    Vector dP;
+
 };
 
 

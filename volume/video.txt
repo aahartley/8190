@@ -1,0 +1,14 @@
+ffmpeg -i name.%04d.exr test.mp4
+ffplay -loop 0 test.mp4
+ffmpeg -r 10 -i name.%04d.exr -r 60 test.mp4
+coming in at 10 fps output 60 fps
+
+imagemagk
+convert 
+
+for a in *.exr
+do
+convert $a -gamma 0.2 $a.jpg
+done
+
+ffmpeg -i name.%04d.exr.jpg test.mp4
