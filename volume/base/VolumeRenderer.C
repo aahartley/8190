@@ -127,7 +127,7 @@ void VolumeRenderer::generate_frames()
         if(wedge)
         {
             //models->accumulateNoiseParam(nd1, i, "pyro");
-            models->accumulateNoiseParam(nd1, i, "ifn");
+            //models->accumulateNoiseParam(nd1, i, "ifn");
             //models->accumulateNoiseParam(nd2, i, "wisp2");
             //models->addRandPyroSphere();
             //models->addPyroSphere(nd1);

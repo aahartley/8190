@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 {
 
     VolumeRenderer* renderer = nullptr;
-    std::shared_ptr<Random> random (  new Random(1));
+    std::shared_ptr<Random> random (  new Random(100000));
     std::shared_ptr<img::ImgProc> imgProc (new img::ImgProc());
     std::shared_ptr<Camera> camera ( new Camera());
     std::shared_ptr<Models> models(new Models());
