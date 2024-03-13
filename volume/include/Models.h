@@ -46,10 +46,11 @@ class Models
 
     void scene2();
     void addPyroSphere(NoiseData& param);
-    void addRandPyroSphere();
+    void addRandPyroSphere(NoiseData& param);
     void addIFNoise(NoiseData& param);
-    void addRandIFNoise();
+    void addRandIFNoise(NoiseData& param);
     void addWisp(NoiseData& param1, NoiseData& param2);
+    void addRandWisp(NoiseData& noiseparams, NoiseData& noiseparams2);
 
     void accumulateNoiseParam(NoiseData& param, const int iter, const std::string& type);
 

@@ -126,14 +126,18 @@ void VolumeRenderer::generate_frames()
         }
         if(wedge)
         {
-            models->accumulateNoiseParam(nd1, i, "pyro");
-            models->accumulateNoiseParam(nd2, i, "wisp2");
-            models->addRandPyroSphere();
+            //models->accumulateNoiseParam(nd1, i, "pyro");
+            models->accumulateNoiseParam(nd1, i, "ifn");
+            //models->accumulateNoiseParam(nd2, i, "wisp2");
+            //models->addRandPyroSphere();
             //models->addPyroSphere(nd1);
             //models->addIFNoise(nd1);
+            models->addRandIFNoise(nd1);
             //models->addWisp(nd1, nd2);
             density = models->getGriddedClampedDensityField(0.0,1.0);
             colorfield =  models->getGriddedColorField();
+            //density = models->getClampedDensityField(0.0,0.1);
+            //colorfield =  models->getColorField();
 
             addDSM(TL, density, 0.03, 1, 0);
             addDSM(TL2, density, 0.03, 1, 1);

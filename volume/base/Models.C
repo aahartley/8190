@@ -668,9 +668,8 @@ void Models::addIFNoise(NoiseData& noiseparams)
     createFinalUnion(s);
 }
 
-void Models::addRandPyroSphere()
+void Models::addRandPyroSphere(NoiseData& noiseparams)
 {
-    NoiseData noiseparams{};
     noiseparams.octaves = random->randUniform(1,4);
     noiseparams.fjump = random->randUniform(0.6, 5);
     noiseparams.frequency = random->randUniform(0.5, 4);
@@ -689,17 +688,17 @@ void Models::addRandPyroSphere()
     createFinalUnion(ps);
 }
 
-void Models::addRandIFNoise()
+void Models::addRandIFNoise(NoiseData& noiseparams)
 {
     ScalarField sphere = Sphere(Vector(0,0,0), 3);
     ScalarGrid grid = makeGrid(gb, 0);
-    float nb_stamps = 100;
+    int nb_stamps = 100;
     float sdf_value;
     std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
     NoiseSrc ns = pn;
     std::shared_ptr<FractalSumFade> fs = std::make_shared<FractalSumFade>(ns);
     _Noise noise = fs;
-    NoiseData noiseparams{};
+    //#pragma omp parallel for
     for(int i = 0; i < nb_stamps; i++)
     {
         // Generate a random number
@@ -717,10 +716,10 @@ void Models::addRandIFNoise()
             sdf_value = evaluate(sphere, Vector(Px,Py,Pz));
         }
         if(sdf_value > 3) sdf_value = 3;
-        noiseparams.octaves = random->randUniform(1,10);
-        noiseparams.fjump = random->randUniform(0.1, 10);
-        noiseparams.frequency = random->randUniform(0.1, 10);
-        noiseparams.roughness = random->randUniform(0.1, 10);
+        noiseparams.octaves = random->randUniform(1,4);
+        noiseparams.fjump = random->randUniform(0.3, 5);
+        noiseparams.frequency = random->randUniform(0.5, 4);
+        noiseparams.roughness = random->randUniform(0.3, 5);
         noiseparams.fade_radius = sdf_value;
         noiseparams.fade = 5.0 * random->randUniform(0,1);
         noiseparams.fade_x0 = Vector(Px, Py, Pz);
@@ -749,6 +748,60 @@ void Models::addWisp(NoiseData& noiseparams, NoiseData& noiseparams2)
     NoiseSrc ns2 = pn2;
     std::shared_ptr<FractalSum> fs2 = std::make_shared<FractalSum>(ns2);
     _Noise noise2 = fs2;
+    noise2->setParameters(noiseparams2);
+
+    int numchildren = 5'000'000;
+    float den = 1;
+    Vector P_local(0,0,0);
+    float scale = 5;
+
+    for(int i = 0; i < numchildren; i++)
+    {
+
+        float Px = random->randUniform(-1, 1);
+        float Py = random->randUniform(-1, 1);
+        float Pz = random->randUniform(-1, 1);
+
+        Vector P_0 (Px, Py, Pz);
+        Vector P_1 = P_0 / P_0.magnitude();
+        float R = std::pow(std::abs(noise->eval(P_0)), noiseparams2.clump);
+        Vector P_2 = R * P_1;
+        Vector P_3 = P_local + scale *P_2;
+        Vector D (noise2->eval(P_2), noise2->eval(P_2 + noiseparams2.dP), noise2->eval(P_2-noiseparams2.dP));
+        Vector P_4 = P_3 + D;
+
+        stampWisp(grid, P_4, den);
+    }
+    ScalarField s = gridded(grid);
+
+    createColorField(s, Color(0.3,0.3,0.3,1));
+    createFinalUnion(s);
+}
+
+void Models::addRandWisp(NoiseData& noiseparams, NoiseData& noiseparams2)
+{
+    ScalarGrid grid = makeGrid(gb, 0);
+    
+
+    std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
+    NoiseSrc ns = pn;
+    std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
+    _Noise noise = fs;
+    noiseparams.octaves = random->randUniform(1,4);
+    noiseparams.fjump = random->randUniform(0.6, 5);
+    noiseparams.frequency = random->randUniform(0.5, 4);
+    noiseparams.roughness = random->randUniform(0.3, 5);
+    noise->setParameters(noiseparams);
+
+    std::shared_ptr<PerlinNoise> pn2 = std::make_shared<PerlinNoise>();
+    NoiseSrc ns2 = pn2;
+    std::shared_ptr<FractalSum> fs2 = std::make_shared<FractalSum>(ns2);
+    _Noise noise2 = fs2;
+    noiseparams2.octaves = random->randUniform(1,4);
+    noiseparams2.fjump = random->randUniform(0.6, 5);
+    noiseparams2.frequency = random->randUniform(0.5, 4);
+    noiseparams2.roughness = random->randUniform(0.3, 5);
+    noiseparams2.clump = random->randUniform(0.2, 3);
     noise2->setParameters(noiseparams2);
 
     int numchildren = 5'000'000;

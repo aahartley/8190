@@ -74,7 +74,8 @@
         "FullGrids.C": "cpp",
         "Grids.C": "cpp",
         "testt.C": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "iomanip": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "makefile.launchConfigurations": [
