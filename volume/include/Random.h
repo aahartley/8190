@@ -49,10 +49,10 @@ class Random {
     float randUniform(float min, float max)
     {
         //std::cout << uniformR.size() << '\n';
-        if (uIndex >= uniformR.size())uIndex = 0;
-        float rand = (max - min) * uniformR[uIndex] + min;
-        uIndex+=1;
-        //float rand = (max - min) * createRandUniform(0,1) + min;
+        // if (uIndex >= uniformR.size())uIndex = 0;
+        // float rand = (max - min) * uniformR[uIndex] + min;
+        // uIndex+=1;
+        float rand = (max - min) * createRandUniform(0,1) + min;
 
         return rand;
     }

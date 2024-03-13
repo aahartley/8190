@@ -692,7 +692,7 @@ void Models::addRandIFNoise(NoiseData& noiseparams)
 {
     ScalarField sphere = Sphere(Vector(0,0,0), 3);
     ScalarGrid grid = makeGrid(gb, 0);
-    int nb_stamps = 100;
+    int nb_stamps = 50;
     float sdf_value;
     std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
     NoiseSrc ns = pn;
