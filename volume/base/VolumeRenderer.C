@@ -129,11 +129,12 @@ void VolumeRenderer::generate_frames()
             //models->accumulateNoiseParam(nd1, i, "pyro");
             //models->accumulateNoiseParam(nd1, i, "ifn");
             //models->accumulateNoiseParam(nd2, i, "wisp2");
-            //models->addRandPyroSphere();
+            //models->addRandPyroSphere(nd1);
             //models->addPyroSphere(nd1);
             //models->addIFNoise(nd1);
-            models->addRandIFNoise(nd1);
+            //models->addRandIFNoise(nd1);
             //models->addWisp(nd1, nd2);
+            models->addRandWisp(nd1, nd2);
             density = models->getGriddedClampedDensityField(0.0,1.0);
             colorfield =  models->getGriddedColorField();
             //density = models->getClampedDensityField(0.0,0.1);
