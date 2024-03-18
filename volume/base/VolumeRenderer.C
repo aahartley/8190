@@ -6,8 +6,8 @@ using namespace lux;
 
 VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
 {
-    rotate_table = false;
-    wedge = true;
+    rotate_table = true;
+    wedge = false;
 }
 
 void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double ds, double kappa, int index)
@@ -100,9 +100,10 @@ void VolumeRenderer::generate_frames()
         //colorfield =  models->getColorField();
 
         addDSM(TL, density, 0.03, 1, 0);
-        addDSM(TL2, density, 0.03, 1, 1);
-        addDSM(TL3, density, 0.03, 1, 2);
-        dsmField = std::vector<ScalarField>{TL, TL2, TL3};
+        //addDSM(TL2, density, 0.03, 1, 1);
+        //addDSM(TL3, density, 0.03, 1, 2);
+        dsmField = std::vector<ScalarField>{TL};
+        //dsmField = std::vector<ScalarField>{TL, TL2, TL3};
     }
 
     NoiseData nd1;
