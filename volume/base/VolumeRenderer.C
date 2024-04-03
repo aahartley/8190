@@ -13,7 +13,7 @@ VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
 void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double ds, double kappa, int index)
 {
     GridBox gb = makeGridBox(Vector(-10,-10,-10),Vector(10,10,10),Vector(0.05,0.05,0.05));
-    ScalarGrid lgrid = makeGrid(gb, 0.f);
+    SScalarGrid lgrid = makeSGrid(gb, 0.f);
 
     ProgressMeter pm(1,"dsm"+std::to_string(index));
     #pragma omp parallel for collapse(3)
@@ -118,7 +118,7 @@ void VolumeRenderer::generate_frames()
             int last  = (end-1 == 0) ? 1 : end - 1;
             double angleDegrees = 360.0 * i / (last);
             double angleRadians = angleDegrees * M_PI / 180.0;
-            eye = Vector(cam_distance * sin(angleRadians), 0, cam_distance * cos(angleRadians));
+            eye = Vector(cam_distance * sin(angleRadians), 1, cam_distance * cos(angleRadians));
             view = -(eye.unitvector());
         }
         else

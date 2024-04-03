@@ -7,7 +7,7 @@
 #include "Volume.h"
 #include "LinearAlgebra.h"
 #include "FullGrids.h"
-
+#include "SparseGrids.h"
 namespace lux
 {
 
@@ -123,12 +123,33 @@ class MultiplyColor : public Volume<Color>
     ScalarField elem2;
 };
 
-
+class GriddedGridColor : public Volume<Color> 
+ {
+   public:
+  
+     GriddedGridColor( const ColorGrid& g );
+  
+     ~GriddedGridColor(){}
+  
+     const Color eval( const Vector& P ) const;
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "Gridded";
+       return lbl;
+    }
+  
+   private:
+  
+     ColorGrid scgrid;
+     float dx, dy, dz;
+ };
+  
 class GriddedSGridColor : public Volume<Color> 
  {
    public:
   
-     GriddedSGridColor( const ColorGrid& g );
+     GriddedSGridColor( const SColorGrid& g );
   
      ~GriddedSGridColor(){}
   
@@ -142,7 +163,7 @@ class GriddedSGridColor : public Volume<Color>
   
    private:
   
-     ColorGrid scgrid;
+     SColorGrid scgrid;
      float dx, dy, dz;
  };
   

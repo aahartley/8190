@@ -5,6 +5,7 @@
 #include "ImplicitVolumeShapes.h"
 #include "ImplicitVectorShapes.h"
 
+#include "SparseGrids.h"
 #include "FullGrids.h"
 #include "Grids.h"
 #include <iostream>
@@ -51,6 +52,7 @@ class Models
     void addRandIFNoise(NoiseData& param);
     void addWisp(NoiseData& param1, NoiseData& param2);
     void addRandWisp(NoiseData& noiseparams, NoiseData& noiseparams2);
+    void addTerrain();
 
     void accumulateNoiseParam(NoiseData& param, const int iter, const std::string& type);
 

@@ -4,6 +4,7 @@
 
 #include "Volume.h"
 #include "Noise.h"
+#include "Grids.h"
 
 namespace lux
 {
@@ -14,11 +15,11 @@ const Vector evaluate( const VectorField& v, const Vector& P );
 const Color  evaluate( const ColorField&  v, const Vector& P );
 const Matrix evaluate( const MatrixField&  v, const Vector& P );
 
-//VectorField grad( const ScalarField& e ); 
+VectorField grad( const ScalarField& e ); 
 //MatrixField grad( const VectorField& e ); 
 
 ScalarField constant( const float v );
-//VectorField constant( const Vector& v );
+VectorField constant( const Vector& v );
 ColorField  constant( const Color& v );
 MatrixField constant( const Matrix& v );
 
@@ -63,7 +64,9 @@ ScalarField negate( const ScalarField& v );
 ScalarField multiply( const ScalarField& v, const ScalarField& u ); 
 //ScalarField multiply( const ScalarField& v, const float a ); 
 //VectorField multiply( const VectorField& v, const float a ); 
-//VectorField multiply( const VectorField& v, const ScalarField& u ); 
+VectorField multiply( const VectorField& v, const ScalarField& u ); 
+ScalarField multiply( const VectorField& v, const VectorField& u ); 
+
 //ColorField  multiply( const ColorField& v, const float a ); 
 ColorField  multiply( const ColorField& v, const ScalarField& u ); 
 //ColorField  multiply( const ColorField& v, const ColorField& u ); 
@@ -73,7 +76,7 @@ ColorField  multiply( const ColorField& v, const ScalarField& u );
 //ScalarField divide( const ScalarField& v, const float a ); 
 //ScalarField divide( const ScalarField& v, const ScalarField& u ); 
 //VectorField divide( const VectorField& v, const float a ); 
-//VectorField divide( const VectorField& v, const ScalarField& u ); 
+VectorField divide( const VectorField& v, const ScalarField& u ); 
 //ColorField  divide( const ColorField& v, const float a ); 
 //ColorField  divide( const ColorField& v, const ScalarField& u ); 
 //MatrixField divide( const MatrixField& v, const float a ); 
@@ -85,7 +88,7 @@ ColorField  add( const ColorField&  v1, const ColorField& v2 );
 MatrixField add( const MatrixField&  v1, const MatrixField& v2 );
 
 //ScalarField subtract( const ScalarField&  v1, const ScalarField& v2 );
-//VectorField subtract( const VectorField&  v1, const VectorField& v2 );
+VectorField subtract( const VectorField&  v1, const VectorField& v2 );
 //ColorField  subtract( const ColorField&  v1, const ColorField& v2 );
 //MatrixField subtract( const MatrixField&  v1, const MatrixField& v2 );
 
@@ -102,7 +105,12 @@ ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius)
 //ScalarField CappedCylinder( const Vector cen, const Vector axis, const float length, const float radius );
 //ScalarField Shell( const ScalarField& v, const float thickness );
 ScalarField SFNoise( const _Noise& noise );
+VectorField VFNoise( const _Noise& noise );
+
 ScalarField PyroSphere(const Vector& cen, const float rad, const float amp, const float gam, const _Noise& noise );
+ScalarField PyroTerrain(const Vector& xp, const Vector& norm, const float ampP, const float ampN, const float gamP, const float gamN, const float trans, const _Noise& n);
+ScalarField PyroVolume(const ScalarField& e, const float amp, const float gam, const _Noise& noise );
+
 
 ScalarField mask( const ScalarField& v );
 ScalarField clamp( const ScalarField& v, float minv, float maxv );
@@ -133,20 +141,24 @@ ScalarField Cutout( const ScalarField& v1, const ScalarField& v2 );
 //ColorField  gridded( const ColorGrid& g );
 //MatrixField gridded( const MatrixGrid& g );
 
+ScalarField divergenceV ( const SVectorGrid& u);
+VectorField GaussDivFree ( const GridBox& gridB, const VectorField& u, const int iter);
 
-//ScalarField advect( const ScalarField& v, const VectorField& u, const float delt ); 
-//VectorField advect( const VectorField& v, const VectorField& u, const float delt ); 
+ScalarField advect( const ScalarField& v, const VectorField& u, const float delt ); 
+VectorField advect( const VectorField& v, const VectorField& u, const float delt ); 
 //ColorField  advect( const ColorField& v, const VectorField& u, const float delt ); 
 //MatrixField advect( const MatrixField& v, VectorField& u, const float delt ); 
 
-//ScalarField warp( const ScalarField& v, VectorField& map );
-//VectorField warp( const VectorField& v, VectorField& map );
+ScalarField warp( const ScalarField& v, VectorField& map );
+VectorField warp( const VectorField& v, VectorField& map );
 //ColorField  warp( const ColorField& v, VectorField& map );
 //MatrixField warp( const MatrixField& v, VectorField& map );
 
+VectorField iteratedNPT(const ScalarField& f, int n);
+
 //ScalarField dot( const VectorField& e1, const VectorField& e2 );
 //VectorField unitvector( const VectorField& e );
-//VectorField identity();
+VectorField identity();
 //ScalarField xIdentity();
 //ScalarField yIdentity();
 //ScalarField zIdentity();

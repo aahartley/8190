@@ -42,7 +42,7 @@ ScalarField Models::getGriddedMaskedDensityField()
 
 ScalarField Models::getGriddedClampedDensityField(float min, float max) 
 {
-    ScalarGrid dgrid = makeGrid(gb, 0.f);
+    SScalarGrid dgrid = makeSGrid(gb, 0.f);
     density = clamp(scalar_volumes_unioned, min, max);
     stamp(dgrid, density, 1);
     return gridded(dgrid);
@@ -51,7 +51,7 @@ ScalarField Models::getGriddedClampedDensityField(float min, float max)
 
 ColorField Models::getGriddedColorField() 
 {
-    ColorGrid cgrid = makeGrid(gb, Color(0,0,0,0));
+    SColorGrid cgrid = makeSGrid(gb, Color(0,0,0,0));
     stamp(cgrid, colorfield, 1);
     return gridded(cgrid);
 }
@@ -298,7 +298,7 @@ ScalarField Models::addOBJModel(const std::string filepath,Vector llc, Vector ur
     //GridBox gridbox = makeGridBox(Vector(alx,aly,alz),Vector(aux,auy,auz),dims);
     GridBox gridbox = makeGridBox(llc,urc,dims);
 
-    ScalarGrid modelgrid = makeGrid(gridbox, -10000000);
+    SScalarGrid modelgrid = makeSGrid(gridbox, -10000000);
     
     std::cout << triangles.size() << '\n';
     ProgressMeter pm(triangles.size(), "obj load");
@@ -830,4 +830,82 @@ void Models::addRandWisp(NoiseData& noiseparams, NoiseData& noiseparams2)
 
     createColorField(s, Color(0.3,0.3,0.3,1));
     createFinalUnion(s);
+}
+
+void Models::addTerrain()
+{
+    NoiseData noiseparams;
+    std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
+    NoiseSrc ns = pn;
+    std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
+    _Noise noise = fs;
+    noiseparams.octaves = 8;
+    noiseparams.fjump =0.05;
+    noiseparams.frequency = 7.5;
+    noiseparams.roughness = 10;
+    //noiseparams.gamma = 0.8;
+    noise->setParameters(noiseparams);
+
+    ScalarField s = PyroTerrain(Vector(0,-1.5,0), Vector(0,1,0), 20, 0.015, 3,0.33, 0.01, noise);
+    ScalarField tor = Torus(Vector(-5,-1.5,0), 1, 0.3, Vector(0,0,1));
+    ScalarField ntor = PyroVolume(tor, 2, 0.6, noise);
+
+    GridBox gridB = makeGridBox(Vector(2,0,-2),Vector(7,5,3),Vector(0.05,0.05,0.05));
+
+    // //SL advection
+    // VectorField U_field = VFNoise(noise);
+    // //VectorField U = GaussDivFree(U_field, 10);
+    // VectorField U = U_field;
+    // int N = 4;
+    // float dt = 0.8 / N;
+    // // for(int i = 0; i < N; i++)
+    // // {
+    // //     ntor = advect(ntor, U, dt);
+    // // }
+    // for(int i = 0; i < N; i++)
+    // {
+    //     ntor = advect(ntor, U, dt);
+    //     ScalarGrid gridd = makeGrid(gridB, 0);
+    //     stamp(gridd,ntor,1);
+    //     ntor = gridded(gridd);
+    // }
+    // // for(int i = 0; i < N-1; i++)
+    // // {
+    // //     ntor = advect(ntor, U, dt);
+    // //     ScalarGrid gridd = makeGrid(gridB, 0);
+    // //     stamp(gridd,ntor,1);
+    // //     ntor = gridded(gridd);
+    // // }
+    // // ntor = advect(ntor, U, dt);
+    GridBox griddiv = makeGridBox(Vector(2,0,-2),Vector(7,5,3),Vector(0.1,0.1,0.1));
+    ScalarField sphe = Sphere(Vector(5,1,-2), 1.25);
+    ScalarField sphe2 = Sphere(Vector(4.5,2.5,2),2);
+//smoke sim
+    ScalarField source = Sphere(Vector(5,2.5,2), 2); 
+    float dt = 0.3;
+    VectorField U = constant(Vector(0,0,0));
+    ScalarField smoke = constant(0);
+    for(int i = 0; i < 10; i++)
+    {
+        smoke = advect(smoke, U, dt) + source*constant(dt);
+        SScalarGrid gridd = makeSGrid(gridB, 0);
+        stamp(gridd,smoke,1);
+        smoke = gridded(gridd);
+        U = advect(U,U,dt) - constant(Vector(0,-9.81,0))*smoke*constant(dt);
+        U = GaussDivFree(griddiv, U, 10);
+    }
+    
+    ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.3, 0.3 ,0.3));
+    aj = scale(aj, Vector(0.1,0.1,0.1));
+    aj = translate(aj, Vector(-2,0,3));
+    s= Union(s, ntor);
+    s = Cutout(s, sphe);
+    s = Cutout(s, sphe2);
+    s = Union(s, smoke);
+    s = Union(s, aj);
+
+    createColorField(s, Color(0.3,0.3,0.3,1));
+    createFinalUnion(s);
+    // createColorField(smoke, Color(0.3,0.3,0.3,1));
+    // createFinalUnion(smoke);
 }

@@ -4,10 +4,12 @@
 
 #include "Volume.h"
 #include "FullGrids.h"
+#include "SparseGrids.h"
 #include "LinearAlgebra.h"
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include "Fields.h"
 #include "Noise.h"
 
 
@@ -152,7 +154,37 @@ class MultiplyVolume : public Volume<float>
 
     const ScalarField e1, e2;
 };
+class MultiplyVectorVolume : public Volume<float> 
+{
+  public:
 
+
+    MultiplyVectorVolume( const VectorField& v1, const VectorField& v2 ) ;
+
+    ~MultiplyVectorVolume(){}
+
+
+    const float eval( const Vector& P ) const;
+
+    //const Vector grad( const Vector& P ) const; //fix? matrix to vector
+
+
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "MultiplyVectorVolume";
+       lbl = lbl + "(";
+       lbl = lbl + elem1->typelabel();
+       lbl = lbl + ",";
+       lbl = lbl + elem2->typelabel();
+       lbl = lbl + ")";
+       return lbl;
+    }
+
+  private:
+  
+    VectorField elem1;
+    VectorField elem2;
+};
   
  class TranslateVolume : public Volume<float> 
  {
@@ -552,12 +584,33 @@ class SteinerPatchVolume : public Volume<float>
 
 
 
-
+ class GriddedGridVolume : public Volume<float> 
+ {
+   public:
+  
+     GriddedGridVolume( const ScalarGrid& g );
+  
+    ~GriddedGridVolume(){}
+  
+     const float eval( const Vector& P ) const;
+     //const Vector grad(  const Vector& P ) const;
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "Gridded";
+       return lbl;
+    }
+  
+   private:
+  
+     ScalarGrid scgrid;
+     float dx, dy, dz;
+ };
  class GriddedSGridVolume : public Volume<float> 
  {
    public:
   
-     GriddedSGridVolume( const ScalarGrid& g );
+     GriddedSGridVolume( const SScalarGrid& g );
   
     ~GriddedSGridVolume(){}
   
@@ -572,7 +625,7 @@ class SteinerPatchVolume : public Volume<float>
   
    private:
   
-     ScalarGrid scgrid;
+     SScalarGrid scgrid;
      float dx, dy, dz;
  };
   
@@ -597,6 +650,29 @@ class SteinerPatchVolume : public Volume<float>
    private:
   
      _Noise noise;
+ };
+
+  class SDFVolume : public Volume<float> 
+ {
+   public:
+  
+     //NoiseVolume( Noise* n, const float d = 0.01 ); 
+     SDFVolume(const ScalarField& e, int n); 
+  
+    ~SDFVolume(){}
+  
+     const float eval( const Vector& P ) const; 
+     //const Vector grad(  const Vector& P ) const;  
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "SDFVolume";
+       return lbl;
+    }
+  
+   private:
+     const ScalarField elem;
+     int N;
  };
 
 
@@ -626,6 +702,110 @@ class SteinerPatchVolume : public Volume<float>
      _Noise noise;
  };
 
+ class PyroclasticVolume : public Volume<float> 
+ {
+   public:
+  
+     PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n ); 
+  
+    ~PyroclasticVolume(){}
+  
+     const float eval( const Vector& P ) const; 
+     //const Vector grad(  const Vector& P ) const;  
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "PyroclasticVolume";
+       return lbl;
+    }
+  
+   private:
+      const ScalarField elem;
+      float amplitude;
+      float gamma;
+     _Noise noise;
+     ScalarField fspn, warpV;
+     VectorField Xnpt;
+ };
+
+ class PyroclasticTerrain : public Volume<float> 
+ {
+   public:
+  
+     //NoiseVolume( Noise* n, const float d = 0.01 ); 
+     PyroclasticTerrain(const Vector& xp, const Vector& norm, const float ampP, const float ampN, const float gamP, const float gamN, const float trans, const _Noise& n ); 
+  
+    ~PyroclasticTerrain(){}
+  
+     const float eval( const Vector& P ) const; 
+     //const Vector grad(  const Vector& P ) const;  
+  
+    virtual std::string typelabel() 
+    { 
+       std::string lbl = "PyroclasticTerrain";
+       return lbl;
+    }
+  
+   private:
+      Vector Xp;
+      Vector normal;
+      float posAmp;
+      float negAmp;
+      float posGam;
+      float negGam;
+      float transition;
+     _Noise noise;
+ };
+
+class WarpVolume : public Volume<float>
+{
+  public:
+    WarpVolume( const ScalarField& v, VectorField& map );
+    const float eval( const Vector& P ) const;
+    const Vector grad(  const Vector& P ) const;  
+
+  private:
+    const ScalarField elem;
+    VectorField mapX;
+};
+
+
+
+class DivergenceVVolume : public Volume<float> 
+{
+  public:
+
+    DivergenceVVolume( const SVectorGrid& u ) ;
+
+   ~DivergenceVVolume(){}
+
+
+    const float eval( const Vector& P ) const; 
+
+    //const Vector grad( const Vector& P ) const; 
+
+   virtual std::string typelabel() { return "DivergenceVVolume"; }
+
+
+  private:
+    SVectorGrid U;
+};
+
+class AdvectVolume : public Volume<float>
+{
+  public:
+    AdvectVolume( const ScalarField& v, const VectorField& u, const float delt ): elem(v), velocity(u), dt(delt) {}
+    ~AdvectVolume(){}
+    const float eval( const Vector& P ) const
+    {
+      Vector X = P - ( velocity->eval(P) )*dt;
+      return elem->eval(X);
+    }
+  private:
+    const ScalarField elem;
+    VectorField velocity;
+    float dt;
+};
 
 }
 

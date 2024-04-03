@@ -43,7 +43,7 @@ MultiplyVolume::MultiplyVolume( const ScalarField& v , const ScalarField& v2) :
 
 const float MultiplyVolume::eval( const Vector& P ) const 
 {
-   return std::exp( e1->eval(P) * e2->eval(P) ); 
+   return e1->eval(P) * e2->eval(P) ; 
 }
 
 // const Vector MultiplyVolume::grad( const Vector& P ) const { return e1->grad(P) * e2->grad(P); }
@@ -263,8 +263,8 @@ const float ScaleVolume::eval( const Vector& P ) const
 
 const Vector ScaleVolume::grad( const Vector& P ) const
 {
-   //Vector X = P/scale;
-   return  elem->grad(P); //fix
+   Vector X(P.X()/scale.X(), P.Y()/scale.Y(), P.Z()/scale.Z());
+   return  elem->grad(X); 
 }
 
 RotateVolume::RotateVolume( const ScalarField& v, const Vector& s, float a ) :
@@ -286,7 +286,12 @@ const float RotateVolume::eval( const Vector& P ) const
 
 const Vector RotateVolume::grad( const Vector& P ) const
 {
-   return  elem->grad(P); //fix
+   Vector axisNorm = axis.unitvector();
+	float sina = (std::sin(angle*M_PI/180.0));
+	float cosa = (std::cos(angle*M_PI/180.0));
+
+   Vector X = P*cosa + axisNorm *(axisNorm*P)*(1.0-cosa)+ (axisNorm^P)*sina;
+   return  elem->grad(P); 
 }
 
 UnionVolume::UnionVolume( const ScalarField&  v1, const ScalarField& v2 ) :
@@ -372,8 +377,15 @@ const Vector ClampVolume::grad(const Vector& P) const
    return elem->grad(P);
 }
 
+GriddedGridVolume::GriddedGridVolume(const ScalarGrid& g) :scgrid(g)
+{ }
 
-GriddedSGridVolume::GriddedSGridVolume(const ScalarGrid& g) :scgrid(g)
+const float GriddedGridVolume::eval(const Vector& P) const
+{
+   return scgrid->eval(P);
+}
+
+GriddedSGridVolume::GriddedSGridVolume(const SScalarGrid& g) :scgrid(g)
 { }
 
 const float GriddedSGridVolume::eval(const Vector& P) const
@@ -387,6 +399,18 @@ NoiseVolume::NoiseVolume(const _Noise& n) :noise(n)
 const float NoiseVolume::eval(const Vector& P) const
 {
    return noise->eval(P);
+}
+
+SDFVolume::SDFVolume(const ScalarField& e, int n) :
+  elem(e),
+  N(n)
+{ }
+
+const float SDFVolume::eval(const Vector& P) const
+{
+   float f_x = elem->eval(P);
+   return (identity()->eval(P) - iteratedNPT(elem, N)->eval(P)).magnitude() * (f_x/std::abs(f_x));
+
 }
 
 PyroclasticSphere::PyroclasticSphere(const Vector& cen, const float r, const float amp, const float gam, const _Noise& n ) :
@@ -403,3 +427,110 @@ const float PyroclasticSphere::eval(const Vector& P) const
    float f_x = rad - (P-center).magnitude();
    return f_x + amplitude * std::pow(std::abs(noise->eval(x_closest)),gamma);
 }
+
+
+
+PyroclasticVolume::PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n ) :
+  elem(e),
+  amplitude(amp),
+  gamma(gam),
+  noise(n)
+{   
+   fspn = SFNoise(noise);
+   Xnpt = iteratedNPT(elem,2);
+   warpV = warp(fspn, Xnpt);
+    }
+
+const float PyroclasticVolume::eval(const Vector& P) const
+{
+   float f_x = elem->eval(P);
+
+   //return f_x + amplitude * std::pow(std::abs(noise->eval(iteratedNPT(elem, 4)->eval(P))),gamma);
+   return f_x + amplitude * std::pow(std::abs(warpV->eval(P)),gamma);
+
+}
+
+PyroclasticTerrain::PyroclasticTerrain(const Vector& xp, const Vector& norm, const float ampP, const float ampN, const float gamP, 
+                                 const float gamN, const float trans, const _Noise& n ) :
+
+  Xp(xp),
+  normal(norm),
+  posAmp(ampP),
+  negAmp(ampN),
+  posGam(gamP),
+  negGam(gamN),
+  transition(trans),
+  noise(n)
+{ }
+
+const float PyroclasticTerrain::eval(const Vector& P) const
+{
+   float f_p = -normal * (P - Xp);
+   Vector x_closest = P + f_p*normal;
+   float fspn = noise->eval(x_closest);
+   float gamma;
+   if(fspn > transition) gamma = posGam;
+   else if( fspn > 0 && fspn < transition) gamma = posGam * (fspn/transition) + 1 - (fspn/transition);
+   else if( -transition < fspn && fspn < 0) gamma  = negGam * (std::abs(fspn)/transition) + 1 - (std::abs(fspn)/transition);
+   else gamma = negGam;
+   if(fspn >= 0)
+   {
+      //return f_p + posAmp * std::pow(std::abs(fspn), gamma);
+      return f_p + posAmp * std::pow(fspn, gamma );
+   }
+   else
+   {
+      //return f_p + -negAmp * std::pow(std::abs(fspn),gamma );
+      return f_p + -negAmp * std::pow(std::abs(fspn),gamma );
+   }
+}
+
+WarpVolume::WarpVolume(const ScalarField& sf, VectorField&  map ) :
+  elem(sf),
+  mapX(map)
+{ }
+
+const float WarpVolume::eval(const Vector& P) const
+{
+      Vector X = mapX->eval(P);
+      return elem->eval(X);
+}
+const Vector WarpVolume::grad( const Vector& P ) const
+{
+   Vector X = mapX->eval(P);
+   Matrix M = mapX->grad(P);
+   return M * (elem->grad(X)); 
+}
+ MultiplyVectorVolume::MultiplyVectorVolume( const VectorField& v1, const VectorField& v2 ) :
+      elem1(v1),
+      elem2(v2)
+    {}
+
+    const float MultiplyVectorVolume::eval( const Vector& P ) const
+    {
+      Vector e1 = elem1->eval(P);
+      Vector e2 = elem2->eval(P);
+      
+       return  e1 * e2;
+    }
+
+
+   //  const Vector MultiplyVectorVolume::grad( const Vector& P ) const
+   //  {
+   //     return  elem1->grad(P) * elem2->grad(P);
+   //  }
+
+ DivergenceVVolume::DivergenceVVolume( const SVectorGrid& u ) :
+      U(u)
+    {}
+
+    const float DivergenceVVolume::eval( const Vector& P ) const
+    {
+      int i,j,k;
+      U->getGridIndex(P, i, j ,k);
+      float ux = ( (U->get(i+1, j, k) - U->get(i-1, j, k) ) * Vector(1,0,0) ) / ( 2 * U->dx());
+      float uy = ( (U->get(i, j+1, k) - U->get(i, j-1, k) ) * Vector(0,1,0) ) / ( 2 * U->dx()); //dx, must be square gird
+      float uz = ( (U->get(i, j, k+1) - U->get(i, j, k-1) ) * Vector(0,0,1) ) / ( 2 * U->dx());
+      float divU = ux+ uy + uz;
+       return  ((U->dx()*U->dx())/6) * divU;
+    }

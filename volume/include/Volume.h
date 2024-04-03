@@ -167,6 +167,8 @@ class Volume : public VolumeBase
       valueY = valueY - valueY;
       valueZ = valueZ - valueZ;
       Vector dx(gradParams.step_x(),0,0), dy(0,gradParams.step_y(),0), dz(0,0,gradParams.step_z());
+
+
       for( size_t i=1;i<=(size_t)gradParams.nbTerms();i++ )
       {
          double coeff = gradParams.coefficient( (int)i );

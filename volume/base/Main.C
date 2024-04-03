@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     std::shared_ptr<img::ImgProc> imgProc (new img::ImgProc());
     std::shared_ptr<Camera> camera ( new Camera());
     std::shared_ptr<Models> models(new Models());
-    imgProc->clear(960, 540, 4);
+    imgProc->clear(1920, 1080, 4);
     std::vector<std::string> args;
     for(int i = 0; i < argc; i++)
     {
@@ -35,11 +35,12 @@ int main(int argc, char** argv)
     {
         random->populateRand();
         //GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.05,0.05,0.05));
-        GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.012,0.012,0.012)); //0.012
-        //GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.05,0.05,0.05)); //0.012
+        //GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.012,0.012,0.012)); //0.012
+        GridBox gb = makeGridBox(Vector(-8,-3,-8),Vector(8,5,8),Vector(0.03,0.03,0.03)); //0.012
 
         models->setGridBox(gb);
         models->setRandom(random);
+        models->addTerrain();
         //models->scene2();
         //models->addPyroSphere();
         //models->addIFNoise();

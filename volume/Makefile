@@ -11,6 +11,8 @@ OFILES = base/Matrix.o \
 	 base/ImplicitVectorShapes.o \
 	 base/ImplicitColors.o \
 	 base/ImplicitMatrixShapes.o \
+	 base/RectangularGrid.o\
+	 base/SparseGrids.o\
 	 base/ImgProc.o \
 	 base/Models.o \
 	 base/VolumeRenderer.o\
