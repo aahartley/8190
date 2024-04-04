@@ -147,7 +147,7 @@ void VolumeRenderer::generate_frames()
             dsmField = std::vector<ScalarField>{TL, TL2, TL3};
         }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(1, 20, 0, 0.005, 1, density, colorfield );//fix
+        raymarch(0.01, 20, 0, 0.005, 1, density, colorfield );//fix
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         std::string img_num = std::to_string(i);

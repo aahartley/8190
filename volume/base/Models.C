@@ -877,7 +877,7 @@ void Models::addTerrain()
     // //     ntor = gridded(gridd);
     // // }
     // // ntor = advect(ntor, U, dt);
-    GridBox griddiv = makeGridBox(Vector(2,0,-2),Vector(7,5,3),Vector(0.1,0.1,0.1));
+    GridBox griddiv = makeGridBox(Vector(2,0,-2),Vector(7,5,3),Vector(0.1,0.1,0.1));//cube
     ScalarField sphe = Sphere(Vector(5,1,-2), 1.25);
     ScalarField sphe2 = Sphere(Vector(4.5,2.5,2),2);
 //smoke sim
