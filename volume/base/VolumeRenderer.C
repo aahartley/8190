@@ -6,8 +6,9 @@ using namespace lux;
 
 VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
 {
-    rotate_table = true;
+    rotate_table = false;
     wedge = false;
+    sim = true;
 }
 
 void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double ds, double kappa, int index)
@@ -42,7 +43,7 @@ void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double 
             }
         }
     }
-    sf = exp((constant((float)-kappa)*gridded(lgrid)));
+    sf = exp((gridded(lgrid)*constant((float)-kappa)));
     pm.update();
 
 }
@@ -92,7 +93,7 @@ void VolumeRenderer::generate_frames()
     ScalarField TL, TL2, TL3;
     lightColor = std::vector<Color>{ Color(1,1,1,1), Color(0.25,0.25,0.25,1), Color(0.4,0.4,0.4,1)}; //key, rim, fill
     lightPos = std::vector<Vector>{ Vector(0,9.9,0), Vector(0,-9.9,0), Vector(0,0,-9.9)};
-    if(!wedge)
+    if(!wedge && !sim)
     {
         density = models->getGriddedClampedDensityField(0.0,1.0);
         colorfield =  models->getGriddedColorField();
@@ -108,6 +109,8 @@ void VolumeRenderer::generate_frames()
 
     NoiseData nd1;
     NoiseData nd2;
+    VectorField U = constant(Vector(0,0,0));
+    ScalarField smoke = constant(0);
     ProgressMeter pm (end-start,"demo");
     for(int i = start; i < end; i++)
     {
@@ -146,8 +149,20 @@ void VolumeRenderer::generate_frames()
             addDSM(TL3, density, 0.03, 1, 2);
             dsmField = std::vector<ScalarField>{TL, TL2, TL3};
         }
+        if(sim)
+        {
+            models->sim1(i,nd1, U, smoke);
+            nd1.translate = (Vector(0,0,i));
+            density = models->getGriddedClampedDensityField(0.0,1.0);
+            colorfield =  models->getGriddedColorField();
+            //density = models->getClampedDensityField(0.0,0.1);
+            //colorfield =  models->getColorField();
+
+            addDSM(TL, density, 0.03, 1, 0);
+            dsmField = std::vector<ScalarField>{TL};
+        }
         camera->setEyeViewUp(eye, view, Vector(0,1,0));
-        raymarch(0.01, 20, 0, 0.005, 1, density, colorfield );//fix
+        raymarch(1, 20, 0, 0.02, 1, density, colorfield );//0.005
         //imgProc->write_image("image_"+std::to_string(i), 'o');
         //imgProc->write_image("image_"+std::to_string(i), 'j');
         std::string img_num = std::to_string(i);
@@ -157,7 +172,7 @@ void VolumeRenderer::generate_frames()
         imgProc->write_image("test."+img_num, 'o');
         imgProc->write_image("test."+img_num, 'j');
 
-        if(wedge) models->reset();
+        if(wedge || sim) models->reset();
         pm.update();
 
     }

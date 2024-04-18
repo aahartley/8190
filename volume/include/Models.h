@@ -46,6 +46,8 @@ class Models
     void reset() { scalar_volumes_unioned = constant(-1000);  colorfield = constant(Color(0,0,0,0));}
 
     void scene2();
+    void scene3();
+    void sim1(int frame, NoiseData& nd,VectorField& U, ScalarField& smoke);
     void addPyroSphere(NoiseData& param);
     void addRandPyroSphere(NoiseData& param);
     void addIFNoise(NoiseData& param);

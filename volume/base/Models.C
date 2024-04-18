@@ -909,3 +909,50 @@ void Models::addTerrain()
     // createColorField(smoke, Color(0.3,0.3,0.3,1));
     // createFinalUnion(smoke);
 }
+void Models::scene3()
+{
+
+    //ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.03, 0.03 ,0.03));
+    //ScalarField aj = addOBJModel("models/ajax/smallajax.obj",Vector(-12.2,-25.51,-12.44), Vector(10.2,16.13,9.71), Vector(0.8, 0.8 ,0.8));
+    //ScalarField aj = addOBJModel("models/triangle/box.obj", Vector(-1.1,-1.1,-1.1), Vector(1.1,1.1,1.1), Vector(0.1,0.1,0.1));
+    //aj = scale(aj, Vector(0.3,0.3,0.3));
+    //aj = translate(aj, Vector(0,-1,0));
+    ScalarField aj = Sphere(Vector(0,0,0),2);
+    createColorField(aj, Color(0.3,0.3,0.3,1));
+    createFinalUnion(aj);
+  
+
+}
+
+void Models::sim1(int frame, NoiseData& nd, VectorField& U, ScalarField& smoke)
+{
+    // std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
+    // NoiseSrc ns = pn;
+    // std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
+    // _Noise noise = fs;
+    // noise->setParameters(nd);
+
+    // ScalarField ps = PyroSphere(Vector(frame,0,0), 2, 1.5,nd.gamma, noise);
+
+  
+
+    //smoke sim
+    GridBox gridB = makeGridBox(Vector(-3,-2,-3),Vector(3,12,3),Vector(0.05,0.05,0.05));
+    GridBox griddiv = makeGridBox(Vector(-6,-6,-6),Vector(6,6,6),Vector(0.1,0.1,0.1));//cube
+    ScalarField source = Sphere(Vector(0,-1,0), 1); 
+    float dt = 0.3;
+    //for(int i = 0; i < 15; i++)
+    //{
+    smoke = advect(smoke, U, dt) + source*constant(dt);
+    SScalarGrid gridd = makeSGrid(gridB, 0);
+    stamp(gridd,smoke,1);
+    smoke = gridded(gridd);
+    U = advect(U,U,dt) - constant(Vector(0,-9.81,0))*smoke*constant(dt);
+    U = GaussDivFree(griddiv, U, 10);
+    //}
+    
+
+
+    createColorField(smoke, Color(0.3,0.3,0.3,1));
+    createFinalUnion(smoke);
+}
