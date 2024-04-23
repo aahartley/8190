@@ -430,14 +430,15 @@ const float PyroclasticSphere::eval(const Vector& P) const
 
 
 
-PyroclasticVolume::PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n ) :
+PyroclasticVolume::PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n, int iter ) :
   elem(e),
   amplitude(amp),
   gamma(gam),
-  noise(n)
+  noise(n),
+  N(iter)
 {   
    fspn = SFNoise(noise);
-   Xnpt = iteratedNPT(elem,2);
+   Xnpt = iteratedNPT(elem,iter);
    warpV = warp(fspn, Xnpt);
     }
 
@@ -445,7 +446,7 @@ const float PyroclasticVolume::eval(const Vector& P) const
 {
    float f_x = elem->eval(P);
 
-   //return f_x + amplitude * std::pow(std::abs(noise->eval(iteratedNPT(elem, 4)->eval(P))),gamma);
+   //return f_x + amplitude * std::pow(std::abs(noise->eval(iteratedNPT(elem, 10)->eval(P))),gamma);
    return f_x + amplitude * std::pow(std::abs(warpV->eval(P)),gamma);
 
 }
@@ -532,6 +533,6 @@ const Vector WarpVolume::grad( const Vector& P ) const
       float uy = ( (U->get(i, j+1, k) - U->get(i, j-1, k) ) * Vector(0,1,0) ) / ( 2 * U->dx()); //dx, must be square gird
       float uz = ( (U->get(i, j, k+1) - U->get(i, j, k-1) ) * Vector(0,0,1) ) / ( 2 * U->dx());
       float divU = ux+ uy + uz;
-       return  ((U->dx()*U->dx())/6) * divU;
+       return  ((U->dx()*U->dx())/6.) * divU;
     }
 

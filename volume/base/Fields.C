@@ -81,7 +81,7 @@ ScalarField Cylinder( const Vector& cen, const Vector& norm, const float radius)
 ScalarField SFNoise(const _Noise& noise){ return ScalarField( new NoiseVolume(noise));}
 ScalarField PyroSphere(const Vector& cen, const float rad, const float amp, const float gam, const _Noise& noise){ return ScalarField( new PyroclasticSphere(cen, rad, amp, gam,noise));}
 ScalarField PyroTerrain(const Vector& xp, const Vector& norm, const float ampP, const float ampN, const float gamP, const float gamN, const float trans, const _Noise& n){ return ScalarField( new PyroclasticTerrain(xp, norm, ampP, ampN, gamP,gamN,trans, n));}
-ScalarField PyroVolume(const ScalarField& e, const float amp, const float gam, const _Noise& noise ){return ScalarField ( new PyroclasticVolume(e, amp, gam, noise));}
+ScalarField PyroVolume(const ScalarField& e, const float amp, const float gam, const _Noise& noise, int n ){return ScalarField ( new PyroclasticVolume(e, amp, gam, noise, n));}
 
 VectorField VFNoise(const _Noise& noise){ return VectorField( new NoiseVectorVolume(noise));}
 
@@ -120,13 +120,12 @@ VectorField iteratedNPT(const ScalarField& f, int N)
 
 ScalarField divergenceV ( const SVectorGrid& u) { return ScalarField(new DivergenceVVolume(u));}
 
-VectorField GaussDivFree ( const GridBox& gridB,const VectorField& U_field, const int iter)
+void GaussDivFree ( const GridBox& gridB, ScalarField& p_field, VectorField& U_field, const int iter)
 {
 
     SVectorGrid U_grid = makeSGrid(gridB, Vector(0,0,0));
     stamp(U_grid, U_field, 1);
 
-    ScalarField p_field = constant(0);
     SScalarGrid p_grid = makeSGrid(gridB, 0);
     stamp(p_grid, p_field, 1);
 
@@ -149,7 +148,7 @@ VectorField GaussDivFree ( const GridBox& gridB,const VectorField& U_field, cons
                     //             p_grid->eval(p_grid->evalP(i, j ,k+1)) + p_grid->eval(p_grid->evalP(i, j ,k-1)) ) / 6;
                     float p_avg = ( p_grid->get(i+1, j ,k) + p_grid->get(i-1, j ,k) +
                                     p_grid->get(i, j+1 ,k) + p_grid->get(i, j-1 ,k) +
-                                    p_grid->get(i, j ,k+1) + p_grid->get(i, j ,k-1) ) / 6;
+                                    p_grid->get(i, j ,k+1) + p_grid->get(i, j ,k-1) ) / 6.0;
                     p_grid->set(i, j ,k, p_avg - d_grid->get(i, j, k));
                 }
             }
@@ -157,12 +156,10 @@ VectorField GaussDivFree ( const GridBox& gridB,const VectorField& U_field, cons
         count++;
     }
 
-    ScalarField p = gridded(p_grid);
+    p_field = gridded(p_grid);
     VectorField U = gridded(U_grid);
 
-    VectorField v = U - grad(p);
-
-    return v;
+    U_field = U - grad(p_field);
 
 }
 

@@ -137,7 +137,7 @@ class MultiplyVolume : public Volume<float>
 
     const float eval( const Vector& P ) const;
 
-   // const Vector grad(  const Vector& P ) const;
+    //const Vector grad(  const Vector& P ) const;
 
    virtual std::string typelabel() 
    { 
@@ -706,7 +706,7 @@ class SteinerPatchVolume : public Volume<float>
  {
    public:
   
-     PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n ); 
+     PyroclasticVolume(const ScalarField& e, const float amp, const float gam, const _Noise& n, int iter ); 
   
     ~PyroclasticVolume(){}
   
@@ -723,6 +723,7 @@ class SteinerPatchVolume : public Volume<float>
       const ScalarField elem;
       float amplitude;
       float gamma;
+      int N;
      _Noise noise;
      ScalarField fspn, warpV;
      VectorField Xnpt;
@@ -798,9 +799,11 @@ class AdvectVolume : public Volume<float>
     ~AdvectVolume(){}
     const float eval( const Vector& P ) const
     {
-      Vector X = P - ( velocity->eval(P) )*dt;
+      Vector X = P -  (velocity->eval(P)) * dt;
       return elem->eval(X);
     }
+   // const Vector grad( const Vector& P ) const; 
+
   private:
     const ScalarField elem;
     VectorField velocity;

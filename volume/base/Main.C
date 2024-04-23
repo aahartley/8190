@@ -37,7 +37,7 @@ int main(int argc, char** argv)
         //GridBox gb = makeGridBox(Vector(-8,-8,-8),Vector(8,8,8),Vector(0.05,0.05,0.05));
         //GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.012,0.012,0.012)); //0.012
         //GridBox gb = makeGridBox(Vector(-8,-3,-8),Vector(8,5,8),Vector(0.02,0.02,0.02)); //0.012
-        GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,12,3),Vector(0.05,0.05,0.05));
+        GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.05,0.05,0.05));
 
         models->setGridBox(gb);
         models->setRandom(random);

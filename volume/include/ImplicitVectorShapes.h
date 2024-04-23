@@ -293,6 +293,8 @@ class AdvectVectorVolume : public Volume<Vector>
       Vector X = P - ( velocity->eval(P) )*dt;
       return elem->eval(X);
     }
+
+
   private:
     const VectorField elem;
     VectorField velocity;
@@ -313,9 +315,8 @@ class AdvectVectorVolume : public Volume<Vector>
       float nx = noise->eval(P+Vector(dx,0,0));
       float ny = noise->eval(P+Vector(0,dx,0));
       float nz = noise->eval(P+Vector(0,0,dx));
-      Vector g( ny-nz, nz-nx, nx-ny );
-      g /= dx;
-      return g;
+      Vector p( nx, ny, nz );
+      return p;
     }
      //const Vector grad(  const Vector& P ) const;  
   

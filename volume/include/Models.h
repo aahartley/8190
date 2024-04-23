@@ -47,12 +47,12 @@ class Models
 
     void scene2();
     void scene3();
-    void sim1(int frame, NoiseData& nd,VectorField& U, ScalarField& smoke);
+    void sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, VectorField& U, ScalarField& model, float deltat);
     void addPyroSphere(NoiseData& param);
     void addRandPyroSphere(NoiseData& param);
     void addIFNoise(NoiseData& param);
     void addRandIFNoise(NoiseData& param);
-    void addWisp(NoiseData& param1, NoiseData& param2);
+    void addWisp(NoiseData& param1, NoiseData& param2, const Vector& P_local);
     void addRandWisp(NoiseData& noiseparams, NoiseData& noiseparams2);
     void addTerrain();
 
@@ -74,6 +74,7 @@ class Models
 
     ColorField getGriddedColorField();
 
+    bool sim_reset = false;
   private:
     ScalarField scalar_volumes_unioned;
     ColorField colorfield;

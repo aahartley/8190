@@ -109,7 +109,7 @@ VectorField VFNoise( const _Noise& noise );
 
 ScalarField PyroSphere(const Vector& cen, const float rad, const float amp, const float gam, const _Noise& noise );
 ScalarField PyroTerrain(const Vector& xp, const Vector& norm, const float ampP, const float ampN, const float gamP, const float gamN, const float trans, const _Noise& n);
-ScalarField PyroVolume(const ScalarField& e, const float amp, const float gam, const _Noise& noise );
+ScalarField PyroVolume(const ScalarField& e, const float amp, const float gam, const _Noise& noise, int n );
 
 
 ScalarField mask( const ScalarField& v );
@@ -142,7 +142,7 @@ ScalarField Cutout( const ScalarField& v1, const ScalarField& v2 );
 //MatrixField gridded( const MatrixGrid& g );
 
 ScalarField divergenceV ( const SVectorGrid& u);
-VectorField GaussDivFree ( const GridBox& gridB, const VectorField& u, const int iter);
+void GaussDivFree ( const GridBox& gridB, ScalarField& p_field, VectorField& u, const int iter);
 
 ScalarField advect( const ScalarField& v, const VectorField& u, const float delt ); 
 VectorField advect( const VectorField& v, const VectorField& u, const float delt ); 
