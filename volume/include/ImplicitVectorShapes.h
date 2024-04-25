@@ -310,14 +310,24 @@ class AdvectVectorVolume : public Volume<Vector>
   
     ~NoiseVectorVolume(){}
   
+    // const Vector eval( const Vector& P ) const
+    // {
+    //   float nx = noise->eval(P+Vector(dx,0,0));
+    //   float ny = noise->eval(P+Vector(0,dx,0));
+    //   float nz = noise->eval(P+Vector(0,0,dx));
+    //   Vector p( nx, ny, nz );
+    //   return p;
+    // }
     const Vector eval( const Vector& P ) const
-    {
-      float nx = noise->eval(P+Vector(dx,0,0));
-      float ny = noise->eval(P+Vector(0,dx,0));
-      float nz = noise->eval(P+Vector(0,0,dx));
-      Vector p( nx, ny, nz );
-      return p;
-    }
+{
+   float nx = noise->eval(P+Vector(dx,0,0));
+   float ny = noise->eval(P+Vector(0,dx,0));
+   float nz = noise->eval(P+Vector(0,0,dx));
+   Vector g( ny-nz, nz-nx, nx-ny );
+   g /= dx;
+   return g;
+}
+
      //const Vector grad(  const Vector& P ) const;  
   
     virtual std::string typelabel() 

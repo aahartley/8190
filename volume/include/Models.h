@@ -47,7 +47,9 @@ class Models
 
     void scene2();
     void scene3();
+    void scene4();
     void sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, VectorField& U, ScalarField& model, float deltat);
+
     void addPyroSphere(NoiseData& param);
     void addRandPyroSphere(NoiseData& param);
     void addIFNoise(NoiseData& param);

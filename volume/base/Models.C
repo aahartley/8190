@@ -995,18 +995,6 @@ void Models::sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, Vect
         }
         model = advect(model, U, dtt);
 
-        std::shared_ptr<PerlinNoise> pn = std::make_shared<PerlinNoise>();
-        NoiseSrc ns = pn;
-        std::shared_ptr<FractalSum> fs = std::make_shared<FractalSum>(ns);
-        _Noise noise = fs;
-        nd2.frequency = 10;
-        nd2.fjump = 10;
-        nd2.roughness = 10;
-        nd2.octaves = 1;
-        nd2.translate = Vector(0,0,3);
-        noise->setParameters(nd2);
-
-        //model = PyroVolume(model, 4, 2, noise, 0);
         createColorField(model, Color(0.5,0.5,0.5,1));
         createFinalUnion(model);
         sim_reset = true;
@@ -1014,7 +1002,7 @@ void Models::sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, Vect
     }
     else
     {
-        //ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
+        // ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
         // bun = scale(bun, Vector(30,30,30));
         // bun = translate(bun, Vector(0,-3,0));
 
@@ -1030,10 +1018,11 @@ void Models::sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, Vect
         }
         model = advect(model, U, dt);
 
-
+      
 
         createColorField(model, Color(0.5,0.5,0.5,1));
         createFinalUnion(model);
+        //sim_reset = true;
     }
  
 }  
@@ -1051,3 +1040,47 @@ void Models::sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, Vect
     // U = advect(U,U,dt) - constant(Vector(0,-9.81,0))*(smoke*constant(dt));
     // GaussDivFree(griddiv,p_field, U, 10);
     // //}
+void Models::scene4()
+{
+    ScalarField ears = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.14,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
+    ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.15,0.059), Vector(0.0003,0.0003,0.0003));
+    bun = scale(bun, Vector(30,30,30));
+    bun = translate(bun, Vector(0,-3,0));
+    ears = scale(ears, Vector(30,30,30));
+    ears = translate(ears, Vector(0,-3,0));
+    std::shared_ptr<PerlinNoise> pn2 = std::make_shared<PerlinNoise>();
+    NoiseSrc ns2 = pn2;
+    std::shared_ptr<FractalSum> fs2 = std::make_shared<FractalSum>(ns2);
+    _Noise noise2 = fs2;
+    NoiseData nd1;
+    nd1.frequency = 1000;
+    nd1.fjump = 1000;
+    nd1.roughness = 10;
+    nd1.octaves = 20;
+    nd1.gamma = 1;
+    nd1.translate = Vector(0,0,0);
+    noise2->setParameters(nd1);
+    ears = PyroVolume(ears, 100, nd1.gamma, noise2, 0);
+    bun = PyroVolume(bun, 100, nd1.gamma, noise2, 0);
+    //SL advection
+    NoiseData nd;
+    noise2->setParameters(nd);
+    VectorField U = VFNoise(noise2);
+    int N = 2;
+    float dt = 0.5 / N;
+    for(int i = 0; i < N-1; i++)
+    {
+        ears = advect(ears, U, dt);
+        SScalarGrid gridd = makeSGrid(gb, 0);
+        stamp(gridd,ears,1);
+        ears = gridded(gridd);
+    }
+    ears = advect(ears, U, dt);
+
+    bun = Union(bun, ears);
+
+    createColorField(bun, Color(0.5,0.5,0.5,1));
+    createFinalUnion(bun);
+    
+ 
+}  

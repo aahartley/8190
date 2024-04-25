@@ -6,9 +6,9 @@ using namespace lux;
 
 VolumeRenderer::VolumeRenderer(int s, int e) : start(s), end(e)
 {
-    rotate_table = false;
+    rotate_table = true;
     wedge = false;
-    sim = true;
+    sim = false;
 }
 
 void VolumeRenderer::addDSM(ScalarField& sf, const ScalarField& density, double ds, double kappa, int index)
@@ -100,7 +100,7 @@ void VolumeRenderer::generate_frames()
         //density = models->getClampedDensityField(0.0,0.1);
         //colorfield =  models->getColorField();
 
-        addDSM(TL, density, 0.03, 1, 0);
+        addDSM(TL, density, 0.02, 1, 0);
         //addDSM(TL2, density, 0.03, 1, 1);
         //addDSM(TL3, density, 0.03, 1, 2);
         dsmField = std::vector<ScalarField>{TL};
@@ -122,42 +122,26 @@ void VolumeRenderer::generate_frames()
     _Noise noise = fs;
     noise->setParameters(nd);
     VectorField U = VFNoise(noise);
-
-    ScalarField bun = models->addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
-    bun = scale(bun, Vector(30,30,30));
-    bun = translate(bun, Vector(0,-3,0));
-
-    // std::shared_ptr<PerlinNoise> pn2 = std::make_shared<PerlinNoise>();
-    // NoiseSrc ns2 = pn2;
-    // std::shared_ptr<FractalSum> fs2 = std::make_shared<FractalSum>(ns2);
-    // _Noise noise2 = fs2;
-    // noise2->setParameters(nd1);
-    // bun = PyroVolume(bun, 2, 0.3, noise2);
-
     float dt = 0.05;
-    // GridBox gb = makeGridBox(Vector(-3,-3,-3),Vector(3,3,3),Vector(0.05,0.05,0.05));
-    // int N = 2;
-    // float dtt = dt / N;
-    // for(int i = 0; i < N-1; i++)
-    // {
-    //     bun = advect(bun, U, dtt);
-    //     SScalarGrid gridd = makeSGrid(gb, 0);
-    //     stamp(gridd,bun,1);
-    //     bun = gridded(gridd);
-    // }
-    // bun = advect(bun, U, dtt);
+    ScalarField bun;
+    if(sim)
+    {
+        bun = models->addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
+        bun = scale(bun, Vector(30,30,30));
+        bun = translate(bun, Vector(0,-3,0));
+    }
 
     ProgressMeter pm (end-start,"demo");
     for(int i = start; i < end; i++)
     {
         Vector eye, view;
-        double cam_distance = 15;
+        double cam_distance = 12;
         if(rotate_table)
         {
             int last  = (end-1 == 0) ? 1 : end - 1;
             double angleDegrees = 360.0 * i / (last);
             double angleRadians = angleDegrees * M_PI / 180.0;
-            eye = Vector(cam_distance * sin(angleRadians), 1, cam_distance * cos(angleRadians));
+            eye = Vector(cam_distance * sin(angleRadians), 4, cam_distance * cos(angleRadians));
             view = -(eye.unitvector());
         }
         else
@@ -194,7 +178,7 @@ void VolumeRenderer::generate_frames()
             colorfield =  models->getGriddedColorField();
             // density = models->getClampedDensityField(0.0,0.1);
             // colorfield =  models->getColorField();
-
+            //dt = 0.01;
             addDSM(TL, density, 0.01, 1, 0);
             dsmField = std::vector<ScalarField>{TL};
         }
