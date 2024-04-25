@@ -1042,8 +1042,8 @@ void Models::sim1(int frame, NoiseData& nd, NoiseData& nd1, NoiseData& nd2, Vect
     // //}
 void Models::scene4()
 {
-    ScalarField ears = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.14,-0.062), Vector(0.061,0.19,0.059), Vector(0.0005,0.0005,0.0005));
-    ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.15,0.059), Vector(0.0003,0.0003,0.0003));
+    ScalarField ears = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.14,-0.062), Vector(0.061,0.19,0.059), Vector(0.0003,0.0003,0.0003));
+    ScalarField bun = addOBJModel("models/bunny/bunny.obj", Vector(-0.0945,0.032,-0.062), Vector(0.061,0.15,0.059), Vector(0.0002,0.0002,0.0002));
     bun = scale(bun, Vector(30,30,30));
     bun = translate(bun, Vector(0,-3,0));
     ears = scale(ears, Vector(30,30,30));
